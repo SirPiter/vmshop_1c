@@ -675,7 +675,7 @@ function createProduct($data='',$modif='false', $custom_id='0',$harakt='',$cvid,
 			$logs_http[] = "<strong>Загрузка товара</strong> - Товар id - <strong>".$rows_sub_Count."</strong> удален";
 			$log->addEntry ( array ('comment' => 'Этап 4.1.3) Товар id - ' . $rows_sub_Count . ' удален') );
 		}
-		elseif($data['status'] == 'Обновить')  // добавил проверку, чтобы убрать обновление товара. SirPiter
+		else
 		{
 			$sql = "SELECT * FROM #__".$dba['product_db']." where `".$dba['pristavka']."product_id` = '" . $rows_sub_Count . "'";
 			$db->setQuery ( $sql );

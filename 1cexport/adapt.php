@@ -63,6 +63,7 @@ if (VM_VERVM == '2')
 	$dba['createdate'] = "`created_on` = '".date ('Y-m-d H:i:s')."', `created_by` = '".$id_admin."'";
 	$dba['tax_rate_id_t'] = "virtuemart_calc_id";
 	$dba['tax_rate_value_t'] = "calc_value";
+	$dba['tax_rate_name_t'] = "calc_name";  //SirPiter добавлено для определения расчета НДС по имени
 	$dba['shopper_group_id_t'] = "virtuemart_shoppergroup_id";
 	$dba['product_files_t'] = "_medias";
 	

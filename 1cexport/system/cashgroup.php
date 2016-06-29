@@ -160,7 +160,7 @@ function makeCashgroup($data)
 		{
 			$sql = "SELECT virtuemart_calc_id FROM #__".$dba['tax_rate_db']." where `calc_name` = '" . $data['nds_name'] . "'";
 			$db->setQuery ( $sql );
-			//$log->addEntry ( array ('comment' => $sql ) );
+			$log->addEntry ( array ('comment' => $sql ) ); //SirPiter раскомментировал
 			$calc_id = $db->loadResult ();
 			if (isset($calc_id))
 			{

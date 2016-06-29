@@ -55,6 +55,7 @@ function inserManufacture($xml)
 	{
 	//Аматор Попытаемся создать доп. поля - это свойство, но не производитель!
 	
+// SirPiter дополнительные поля не нужны 
 	$lang_1c[0] = $data['name'];	//Аматор - Создадим доп. поле с названием свойства
 	require_once(JPATH_BASE_1C .DS.'system'.DS.'customfields.php');
 	
@@ -68,13 +69,6 @@ function inserManufacture($xml)
 							//		$harakt[$q] = $znachhar;
 							//	}
 							//}
-	
-	
-	
-	
-	
-	
-	
 	
 	}
 					

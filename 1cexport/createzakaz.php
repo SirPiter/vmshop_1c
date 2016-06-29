@@ -57,7 +57,7 @@ if (! empty ( $list ))
 				$val = 'RUB';
 				break;
 			case 'RUB' :
-				$val = 'руб';
+				$val = 'RUB';
 				break;
 			case 'EUR' :
 				$val = 'Евр';
@@ -75,7 +75,10 @@ if (! empty ( $list ))
 		$doc->addChild ( "Время", $time );
 
 			// Контрагенты
-		$db->setQuery ( "SELECT * FROM `#__".$dba['order_user_info_db']."` WHERE `address_type` = 'BT' AND `".$dba['pristavka']."order_id` =" . $zakazy->order_id . " AND `".$dba['pristavka']."user_id`=" . $zakazy->user_id );
+// SirPiter		$db->setQuery ( "SELECT * FROM `#__".$dba['order_user_info_db']."` WHERE `address_type` = 'BT' AND `".$dba['pristavka']."order_id` =" . $zakazy->order_id . " AND `".$dba['pristavka']."user_id`=" . $zakazy->user_id );
+		$db->setQuery ( "SELECT * FROM `#__".$dba['order_user_info_db']."` WHERE `".$dba['pristavka']."order_id` =" . $zakazy->order_id . " AND `".$dba['pristavka']."user_id`=" . $zakazy->user_id );
+
+
 		$client = $db->loadObject ();
 
 		if (! empty ( $client ) & (VM_CLIENT == 1)) 
@@ -124,7 +127,7 @@ if (! empty ( $list ))
 				//$k1_2 = $k1_1->addChild ( "Адрес", $client->city . " ". $client->address_type_name . " ". $client->address_1 );
 				//$k1_2 = $k1_1->addChild ( "Телефон", $client->phone_2 );
 				
-				$kom = "Телефон:". $client->phone_2. ", Адрес:". $client->city . " ". $client->address_1;
+				$kom = "Телефон:". $client->phone_1. ", Адрес:". $client->city . " ". $client->address_1; //SirPiter изменил $client->phone_2 на $client->phone_1
 
 		$db->setQuery ( "SELECT * FROM `#__".$dba['order_user_info_db']."` WHERE `address_type` = 'ST' AND `".$dba['pristavka']."order_id` =" . $zakazy->order_id . " AND `".$dba['pristavka']."user_id`=" . $zakazy->user_id );
 		$clientST = $db->loadObject ();

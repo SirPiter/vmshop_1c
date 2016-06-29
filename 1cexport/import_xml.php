@@ -14,7 +14,8 @@ if ( !defined( 'VM_1CEXPORT' ) )
 $logs_http[] = "<strong>Загрузка товара</strong> - Проверка базы данных совместимости 1с и VMSHOP";
 $log->addEntry ( array ('comment' => 'Этап 4.1.1) Проверка базы данных совместимости 1с и VMSHOP') );
 
-$res = $db->setQuery ( 'SHOW COLUMNS FROM "#__'.$dba['product_to_1c_db'].'"' );
+// SirPiter $res = $db->setQuery ( 'SHOW COLUMNS FROM "#__'.$dba['product_to_1c_db'].'"' );
+$res = $db->setQuery ( 'SHOW COLUMNS FROM #__'.$dba['product_to_1c_db'] ); // SirPiter убраны кавычки 
 
 if( !$db->query($res)) 
 {
@@ -51,7 +52,8 @@ if(!$res2)
 	$logs_http[] = "<strong>Загрузка товара</strong> - Недостоющие поля таблицы product_to_1c созданы";
 }
 
-$res3 = $db->setQuery ( 'SHOW COLUMNS FROM "#__'.$dba['category_to_1c_db'].'"' );
+//SirPiter $res3 = $db->setQuery ( 'SHOW COLUMNS FROM "#__'.$dba['category_to_1c_db'].'"' );
+$res3 = $db->setQuery ( 'SHOW COLUMNS FROM #__'.$dba['category_to_1c_db'] ); // SirPiter убраны кавычки
 
 if( !$db->query($res3)) 
 {
@@ -75,7 +77,8 @@ else
 	$logs_http[] = "<strong>Загрузка товара</strong> - База category_to_1c существует";	
 }
 
-$res4 = $db->setQuery ( 'SHOW COLUMNS FROM "#__'.$dba['manufacturer_to_1c_db'].'"' );
+// SirPiter $res4 = $db->setQuery ( 'SHOW COLUMNS FROM "#__'.$dba['manufacturer_to_1c_db'].'"' );
+$res4 = $db->setQuery ( 'SHOW COLUMNS FROM #__'.$dba['manufacturer_to_1c_db']); //SirPiter убраны кавычки
 
 if( !$db->query($res3)) 
 {

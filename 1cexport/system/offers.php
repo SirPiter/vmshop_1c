@@ -85,6 +85,7 @@ function inserOffers($xml_of)
 									if (isset ( $rows_sub_Count ))
 									{
 										$data['cashgr'] = (int)$rows_sub_Count;
+									//	$log->addEntry ( array ('comment' => 'Этап 4.2.3) id группы цен ' .(int)$rows_sub_Count ) );
 									}
 									else
 									{
@@ -109,7 +110,6 @@ function inserOffers($xml_of)
 								case 'Валюта':
 									$data['val'][$data['cashgr']]  = $offer_xml->readString();
 									break;
-								
 							}
 						}
 					}
@@ -147,31 +147,22 @@ function inserOffers($xml_of)
 				//+Аматор
 				case 'СкидкаНаценка': 
 				$offer_xml->XML($offer->readOuterXML());
-					
 					while($offer_xml->read()) 
 					{
 						if($offer_xml->nodeType == XMLReader::ELEMENT ) 
 						{
 							switch($offer_xml->name) 
 							{
-								
-									
 								case 'Процент':
 									$data['discount']  = (double)$offer_xml->readString();
-									
 								break;
-								
 							}
 						}
 					}
 					$offer->next();
-				
 				break;										
-								
 			}
-								
 		}
-						
 	}
 	
 	if (VM_VERVM == '2' and isset($namehar) and $namehar != '')
@@ -179,7 +170,9 @@ function inserOffers($xml_of)
 		require_once(JPATH_BASE_1C .DS.'system'.DS.'customfields.php');
 		$custom_id = customfields();
 	}
-						
+
+//	$log->addEntry ( array ('comment' => 'Этап 4.2.3) offers ' .print_r($offers) ) ); //SirPiter
+
 	createOffers($data,$custom_id,$offers,$harakt);
 
 }
@@ -188,6 +181,9 @@ function createOffers($data='',$custom_id='0',$offers='',$harakt='')
 {
 	global $log, $db, $dba, $id_admin, $lang_1c;
 	
+
+// SirPiter	$log->addEntry ( array ('comment' => 'Этап 4.2.3) Обрабатываем товар '.$data['name'] ) );
+
 	if (defined( 'VM_SITE' ))
 	{
 		global $logs_http;
@@ -520,6 +516,10 @@ function createOffers($data='',$custom_id='0',$offers='',$harakt='')
 				$logs_http[] = "<strong>Загрузка цен</strong> - <strong><font color='red'>Неудача:</font></strong> Ошибка в запросе - <strong>".$sql."</strong>";
 			}
 			die;
+		}
+		else  // Sirpiter выводим сообщение в лог об обновлении товара
+		{
+			$log->addEntry ( array ('comment' => 'Этап 4.2.3) ТОвар обновлен. id - ' . $product_id.', '.$data["name"].', Количество: '.$data['quantity'].', Цена:'.$price));
 		}	
 		/* Аматор, у нас товар должен быть виден для всех
 		if (VM_VERVM == '2')

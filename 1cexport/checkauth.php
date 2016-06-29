@@ -1,6 +1,7 @@
 <?php
 //***********************************************************************
 // Назначение: Передача товаров из 1С в virtuemart
+//Для Джумлы 2.5, если первая не работает
 // Модуль: checkauth.php - Авторизация на сервере
 
 //***********************************************************************
@@ -57,23 +58,30 @@ if( !$result ) {
 	}
 }
 
-$parts   = explode( ':', $result->password );
+//$parts   = explode( ':', $result->password );
 //$log->addEntry ( array ('comment' => 'Этап 1) parts: ' .$result->password) );
-$crypt   = $parts[0];
-$salt   = @$parts[1];
-$testcrypt = JUserHelper::getCryptedPassword($password, $salt);
+//$crypt   = $parts[0];
+//$salt   = @$parts[1];
+//$testcrypt = JUserHelper::getCryptedPassword($password, $salt);
+
 //Аматор
 //$log->addEntry ( array ('comment' => 'Этап 1) пароль: ' .$password) );
 //$log->addEntry ( array ('comment' => 'Этап 1) crypt: ' .$crypt) );
 //$log->addEntry ( array ('comment' => 'Этап 1) salt: ' .$salt) );
+//$log->addEntry ( array ('comment' => 'Этап 1) $testcrypt: ' .$testcrypt) );
 
-if( $crypt == $testcrypt ) 
-{
+//Denis
+$credentials = array( 'username'=>$username_esc, 'password'=>$password );
+$options = array( 'remember'=>true );
+
+//Denis
+if( JFactory::getApplication()->login( $credentials, $options )){
+//if($crypt == $testcrypt){
 	$id_admin = $result->id;
 
 	$somecontent = $id_admin."\n".$username;
 	
-	$log->addEntry ( array ('comment' => 'Этап 1) Успешно') );	
+	$log->addEntry ( array ('comment' => 'Этап 1) Пользователь: '.$username_esc.' успешно авторизовался.') );	
 	if(!defined( 'VM_SITE' ))
 	{
 		echo 'success';
@@ -86,9 +94,10 @@ if( $crypt == $testcrypt )
 }
 else
 {
-
-
 	$log->addEntry ( array ('comment' => 'Этап 1) Неверный пароль') );
+
+	
+
 	if(!defined( 'VM_SITE' ))
 	{
 		print "failure\n";

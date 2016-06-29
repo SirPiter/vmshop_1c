@@ -51,6 +51,16 @@ $big_zip = false;
 
 if(VM_ZIP == 'no')
 {		
+	$log->addEntry ( array ('comment' => 'Этап 3.1) SirPiter, '.$_REQUEST['filename']) );
+	if(unlink ( JPATH_BASE_PICTURE.DS.$_REQUEST['filename'] ))
+	{
+		$log->addEntry ( array ('comment' => 'Этап 3.1) SirPiter. Файл '.JPATH_BASE_PICTURE.DS.$_REQUEST['filename'].' удален.' ) );
+	} 
+	else
+	{
+		$log->addEntry ( array ('comment' => 'Этап 3.1) SirPiter. Файл '.JPATH_BASE_PICTURE.DS.$_REQUEST['filename'].' не удален.' ));
+	}
+
 		// Проверяем XML или изображения
 		if( strpos( $_REQUEST['filename'], 'import_files') !== false ) 
 		{
@@ -183,7 +193,7 @@ if(isset ( $DATA ) or $DATA !== false)
 		}
 		else
 		{
-			$log->addEntry ( array ('comment' => 'Этап 3.2) Неудача: Немогу открыть файл - '.$filename_to_save) );
+			$log->addEntry ( array ('comment' => 'Этап 3.2) Неудача: Не могу открыть файл - '.$filename_to_save) );
 			echo "failure\n";
 			echo "Can not open file: $filename_to_save\n";
 			echo JPATH_BASE_PICTURE.DS;

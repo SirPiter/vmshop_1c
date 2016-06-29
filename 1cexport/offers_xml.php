@@ -14,10 +14,11 @@ if ( !defined( 'VM_1CEXPORT' ) )
 $logs_http[] = "<strong>Загрузка цен</strong> - Проверка базы данных совместимости 1с и VMSHOP";
 $log->addEntry ( array ('comment' => 'Этап 4.2.1) Проверка базы данных совместимости 1с и VMSHOP') );
 
-$res4 = $db->setQuery ( 'SHOW COLUMNS FROM "#__'.$dba['cashgroup_to_1c_db'].'"' );
+$res4 = $db->setQuery ( 'SHOW COLUMNS FROM #__'.$dba['cashgroup_to_1c_db'] );
 
 if( !$db->query($res4)) 
 {
+	$log->addEntry ( array ('comment' => 'Этап 4.2.1) База cashgroup_to_1c не существует. SQL: '.'SHOW COLUMNS FROM "#__'.$dba['cashgroup_to_1c_db'].'"' ) );			
 	$db->setQuery ( 
 			'CREATE TABLE 
 			`#__'.$dba['cashgroup_to_1c_db'].'` ( 
