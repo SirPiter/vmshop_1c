@@ -2,16 +2,12 @@
 //***********************************************************************
 // Назначение: Передача товаров из 1С в virtuemart
 // Модуль: vmshop_1c.php - Основной модуль
-// Автор оригинала: Дуденков М.В. (email: mihail@termservis.ru)
-// Помогали разрабатывать:	Alexandr Datsiuk
-//							Павел Михнев
-//                          CALEORT
+
 //			    Amator  (email: amatoravg@gmail.com)
-// Авторские права: использовать, а также распространять данный скрипт
-//                  разрешается только с разрешением автора скрипта
+
 //***********************************************************************
 //Системные параметры
-define ( 'VM_VERSION', '2.1.1.Amator' ); 	// Версия скрипта. Будет обновляться!
+define ( 'VM_VERSION', '2.1.4.Amator' ); 	// Версия скрипта. Будет обновляться!
 
 define ( 'VM_HTTP_VERS', 1 ); 	// Использовать модуль http (через браузер) 1- да, 0- нет (в случае 0 - настройте config.php)
 								// Можно сначало включить, настроить, а потом выключить!
@@ -22,7 +18,9 @@ define ( 'VM_1CEXPORT', true );
 ini_set ( 'display_errors', '1' );
 error_reporting ( E_ALL );
 define ( '_JEXEC', 1 );
-define ( 'DS', DIRECTORY_SEPARATOR );
+//define ( 'DS', DIRECTORY_SEPARATOR );
+define ( 'DS', '/' ); // Аматор. Картинки загружаются с неправильным слешем
+
 define ( 'JPATH_BASE', dirname ( __FILE__ ) . '' );
 define ( 'JPATH_BASE_1C', JPATH_BASE . DS .'components'.DS.'com_virtuemart'.DS.'1cexport' );
 
@@ -164,6 +162,8 @@ $template = $templ;
 
 if (isset($_REQUEST['mode'])) 
 {
+	$log->addEntry ( array ('comment' => 'Аматор 0)'.$_REQUEST['mode']) );
+		
 	//?mode=checkauth
 	if( $_REQUEST['mode'] == 'checkauth') 
 	{
@@ -208,13 +208,25 @@ if (isset($_REQUEST['mode']))
 	} 
 	elseif( $_REQUEST['mode'] == 'import') 
 	{
-		$log->addEntry ( array ('comment' => 'Этап 4) Импорт содержимого файлов') );
+		$log->addEntry ( array ('comment' => 'Этап 4) Импорт содержимого файлов (каталог)') );
 		require_once(JPATH_BASE_1C .DS.'import.php');
 		if (isset($handle)) 
 		{
 			fclose($handle);
 			unset($handle);
 		}
+	}
+//+Аматор
+	elseif( $_REQUEST['mode'] == 'importsale') 
+	{
+		$log->addEntry ( array ('comment' => 'Этап 5) Импорт заказов из 1С') );
+		require_once(JPATH_BASE_1C .DS.'importsale.php');
+		if (isset($handle)) 
+		{
+			fclose($handle);
+			unset($handle);
+		}
+//-Аматор
 	} 
 	elseif( $_REQUEST ['mode'] == 'success') 
 	{
