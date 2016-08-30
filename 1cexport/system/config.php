@@ -40,5 +40,7 @@ $config['VM_MANUFACTURE'] = "производитель";
 $config['VM_USER_SHOP'] = "no";
 $config['VM_CLIENT'] = "1";
 $config['VM_NDS_SHIP'] = "Без НДС";
+$config['VM_PUBLISH_NEW_PRODUCT'] = "0";   // SirPiter : публикация нового товара
+$config['VM_PUBLISH_NEW_CATEGORY'] = "0";  // SirPiter : публикация новой категории
 
 ?>

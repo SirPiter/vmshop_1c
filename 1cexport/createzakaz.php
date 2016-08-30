@@ -17,8 +17,16 @@ $no_spaces = '<?xml version="1.0" encoding="UTF-8"?>
 
 $xml = new SimpleXMLElement ( $no_spaces );
 
-$db->setQuery ( "SELECT * FROM `#__".DBBASE."_orders` WHERE `order_status` LIKE 'P'" );
+$db->setQuery ( "SELECT * FROM `#__".DBBASE."_orders` WHERE `order_status` LIKE 'P'" );  // SirPiter изменил запрос, добавив наименование статуса заказа
+
+//$db->setQuery ( "SELECT *, #__virtuemart_orderstates.order_status_name FROM `#__".DBBASE."_orders`  
+//      		LEFT JOIN #__virtuemart_orderstates ON #__".DBBASE."_orders.order_status = #__virtuemart_orderstates.order_status_code 
+//		WHERE `order_status` LIKE 'P'" );
+
 $list = $db->loadObjectList ();
+
+//$log->addEntry ( array ('comment' => $db->explain() ) );
+
 
 if (! empty ( $list )) 
 {
@@ -74,6 +82,14 @@ if (! empty ( $list ))
 		$doc->addChild ( "Сумма", $zakazy->order_subtotal );
 		$doc->addChild ( "Время", $time );
 
+			$sql = "SELECT order_status_name FROM #__virtuemart_orderstates where `order_status_code` = '" . $zakazy->order_status . "'";
+			$db->setQuery ( $sql );
+			$val = $db->loadResult ();
+		$doc->addChild ( "Статус", $val );
+//		$doc->addChild ( "Статус", $zakazy->order_status );
+//		$doc->addChild ( "Статус", $zakazy->order_status_name );  //SirPiter Наименование статуса заказа
+
+
 			// Контрагенты
 // SirPiter		$db->setQuery ( "SELECT * FROM `#__".$dba['order_user_info_db']."` WHERE `address_type` = 'BT' AND `".$dba['pristavka']."order_id` =" . $zakazy->order_id . " AND `".$dba['pristavka']."user_id`=" . $zakazy->user_id );
 		$db->setQuery ( "SELECT * FROM `#__".$dba['order_user_info_db']."` WHERE `".$dba['pristavka']."order_id` =" . $zakazy->order_id . " AND `".$dba['pristavka']."user_id`=" . $zakazy->user_id );
@@ -124,8 +140,8 @@ if (! empty ( $list ))
 				$k1_2 = $k1_1->addChild ( "Имя", $client->first_name );
 				$k1_2 = $k1_1->addChild ( "Фамилия", $client->last_name );
 				$k1_2 = $k1_1->addChild ( "Отчество", $client->middle_name );
-				//$k1_2 = $k1_1->addChild ( "Адрес", $client->city . " ". $client->address_type_name . " ". $client->address_1 );
-				//$k1_2 = $k1_1->addChild ( "Телефон", $client->phone_2 );
+				$k1_2 = $k1_1->addChild ( "Адрес", $client->city . " ". $client->address_type_name . " ". $client->address_1 );  //SirPiter раскомментировал
+				$k1_2 = $k1_1->addChild ( "Телефон", $client->phone_1 );							//SirPiter раскомментировал
 				
 				$kom = "Телефон:". $client->phone_1. ", Адрес:". $client->city . " ". $client->address_1; //SirPiter изменил $client->phone_2 на $client->phone_1
 
@@ -143,7 +159,7 @@ $kom = $kom . ", Адрес доставки:". $clientST->city . " ". $clientST
 
 }
 			
-			
+	
 
 		} 
 		else 
@@ -167,9 +183,11 @@ $kom = $kom . ", Адрес доставки:". $clientST->city . " ". $clientST
 		}
 		
 		$db->setQuery ( "SELECT it.".$dba['pristavka']."product_id as product_id, it.product_item_price as product_item_price,
-				it.product_quantity as product_quantity, it.product_final_price as product_final_price,pd.product_name as product_name
+				it.product_quantity as product_quantity, it.product_final_price as product_final_price,pd.product_name as product_name,
+				c.c_id as guid 
 				FROM #__".$dba['order_item_db']." AS it 
-				LEFT OUTER JOIN #__".$product_db." AS pd ON it.".$dba['pristavka']."product_id = pd.".$dba['pristavka']."product_id
+				LEFT OUTER JOIN #__".$product_db." AS pd ON it.".$dba['pristavka']."product_id = pd.".$dba['pristavka']."product_id 
+                		LEFT JOIN #__virtuemart_product_to_1c AS c ON it.".$dba['pristavka']."product_id = c.product_id 
 				WHERE it.".$dba['pristavka']."order_id =" . $zakazy->order_id );
 
 		$list_z = $db->loadObjectList ();
@@ -177,10 +195,11 @@ $kom = $kom . ", Адрес доставки:". $clientST->city . " ". $clientST
 		foreach ( $list_z as $razbor_zakaza_t ) 
 		{
 			
-			
 			$t1 = $doc->addChild ( 'Товары' );
 			$t1_1 = $t1->addChild ( 'Товар' );
-			$t1_2 = $t1_1->addChild ( "Ид", $razbor_zakaza_t->product_id );
+//			$t1_2 = $t1_1->addChild ( "Ид", $razbor_zakaza_t->product_id );  
+			$t1_2 = $t1_1->addChild ( "Ид", $razbor_zakaza_t->guid );       //SirPiter вместо id товара из Virtuemart подставляется id товара из 1С. В запрос выше добавлена выборка из таблицы _virtuemart_product_to_1c
+
 			$t1_2 = $t1_1->addChild ( "Наименование", $razbor_zakaza_t->product_name );
 			if (VM_NDS == 'yes')
 			{

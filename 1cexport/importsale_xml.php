@@ -112,28 +112,19 @@ function UpdateSale($xml_pr)
 					
 					//$product->next();
 					break;
-									
-				
-					
 				case 'Номер':
 					$data['number'] = (string)$product->readString();	
-$log->addEntry ( array ('comment' => 'Этап 5.1.2) Обработка заказа номер: '.$data['number']) );					
-//$product->next();
+					$log->addEntry ( array ('comment' => 'Этап 5.1.2) Обработка заказа номер: '.$data['number']) );					
+					//$product->next();
 					break;
-					
 				case 'Товар':
-				
-$xml = simplexml_load_string($product->readOuterXML());
-	
-$log->addEntry ( array ('comment' => 'Этап 5.1.2) Наименование:  '.$xml->Наименование) );		
-$log->addEntry ( array ('comment' => 'Этап 5.1.2) Сумма:  '.$xml->Сумма) );					
+					$xml = simplexml_load_string($product->readOuterXML());
+					$log->addEntry ( array ('comment' => 'Этап 5.1.2) Наименование:  '.$xml->Наименование) );		
+					$log->addEntry ( array ('comment' => 'Этап 5.1.2) Сумма:  '.$xml->Сумма) );					
 				if ($xml->Наименование == "Скидка")
 					{     
 					$data['order_payment'] = (double)$xml->Сумма;
 					}
-											
-				
-
 					unset($xml);
 					$product->next();
 					break;
@@ -166,7 +157,6 @@ $db->setQuery ( "SELECT * FROM `#__".DBBASE."_orders` WHERE `order_number` = '" 
 	//$db->setQuery ( $sql );
 		$rows_sub_Count = $db->loadObject();
 	
-	
 	if (! empty ( $rows_sub_Count ))
 	{
 		$log->addEntry ( array ('comment' => 'Этап 5.2.1) Заказ с номером '.$data['number'].' найден в базе, его id: '.$rows_sub_Count->virtuemart_order_id ) );
@@ -188,16 +178,10 @@ if (!$db->query ())
 							die;
 						}
 $log->addEntry ( array ('comment' => 'Этап 5.2.2) Заказу с номером '.$data['number'].' установлена скидка: '.$data['order_payment'] ) );
-
-	
 	
 	}
 	
 	//
-
-
 }
-
-
 
 ?>
