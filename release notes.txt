@@ -1,0 +1,28 @@
+﻿Изменения произведенные для адаптации скрипта vmshop_1c к Joomla v3.8
+
+===== 3.0.1.Amator.SirPiter 22.05.2018 =====
+
+файл == vmshop_1c.php ==
+- убрана строка require ( 'libraries' .DS. 'joomla' .DS. 'factory.php'); Библиотека не существует в J3.8
+
+файл == offers.php ==
+- в строке 306 изменено $sql = "SELECT ".$dba['pristavka']."product_price_id FROM #__".$dba['product_price_db']." where `".$dba['pristavka']."shopper_group_id` = '" . $cash_gr . "' AND `".$dba['pristavka']."product_id` = '" . $product_id . "'";
+	на $sql = "SELECT ".$dba['pristavka']."product_price_id FROM #__".$dba['product_price_db']." where `".$dba['shopper_group_id_t']."` = '" . $cash_gr . "' AND `".$dba['pristavka']."product_id` = '" . $product_id . "'";
+	то есть, вместо $dba['pristavka']."shopper_group_id поставил $dba['shopper_group_id_t']. Вероятно, это ошибка, но почему-то не всплыла раньше.
+
+файл == product.php ==
+- в функции preg_replace сейчас нельзя использовать ключ "e"
+	пока не стал разбираться глубже заменил  "'&#(\d+);'e" на "'&#(\d+);'i" в строках 507 и 579
+
+===== везде где встречается =====
+- изменилась система логирования
+	вместо конструкции типа $log = &JLog::getInstance ( 'vmshop_1c_'.date('y_m_d_H_i').'.log.php' ); 
+		используется JLog::addLogger ( array('text_file' => 'vmshop_1c_'.date('y_m_d_H_i').'.log.php' ), JLog::ALL, array('vmshop_1c'));
+	вместо конструкции типа $log->add ( 'comment' => 'Скрипт адптации 1С и магазина Virtuemart');
+		используется JLog::add ( 'Скрипт адптации 1С и магазина Virtuemart', JLog::DEBUG, 'vmshop_1c' );
+		изменения внесены во все файлы скрипта
+- заменена функция $db->GetEscaped($id) на $db->Escape($id)
+
+На данный момент у меня обновляются цены и количество на сайте.
+Заказы в 1с не выгружаются - строка в файле createzakaz.php print $xml->asXML (); не посылает строку полностью хотя в логе строка правильная.
+ 
