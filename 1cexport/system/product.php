@@ -63,6 +63,8 @@ function inserProduct($xml_pr,$modif='false')
 					//Берем первую часть uuid т.к. могут быть и uuid#id
 					$uuid = explode("#", $product->readString());
 					$data['id'] = (string)$uuid[0];
+					JLog::add ( 'Этап 4.1.3(product.php) Считывание информации (ID) из IMPORT.XML $data[id]='.$data['id'] , JLog::INFO, 'vmshop_1c' );
+					
 					$data['uuid'] = (string)$uuid[0];
 					//$product->next();
 					break;
@@ -350,8 +352,9 @@ function createProduct($data='',$modif='false', $custom_id='0',$harakt='',$cvid,
 			}
 			if (! $db->insertObject ( '#__'.$dba['tax_rate_db'], $ins, $dba['tax_rate_id_t'] )) 
 			{
-				$log->addEntry ( array ('comment' => 'Этап 4.1.3) Неудача: Невозможно вставить запись в таблицу - '.$dba['tax_rate_db'] ) );
-				if(!defined( 'VM_SITE' ))
+				//$log->addEntry ( array ('comment' => 'Этап 4.1.3) Неудача: Невозможно вставить запись в таблицу - '.$dba['tax_rate_db'] ) );
+			    JLog::add ( 'Этап 4.1.3) Неудача: Невозможно вставить запись в таблицу - '.$dba['tax_rate_db'] , JLog::ERROR, 'vmshop_1c' );
+			    if(!defined( 'VM_SITE' ))
 				{
 					echo 'failure\n';
 					echo 'error mysql';
@@ -501,7 +504,7 @@ function createProduct($data='',$modif='false', $custom_id='0',$harakt='',$cvid,
 						 "'&(cent|#162);'i",
 						 "'&(pound|#163);'i",
 						 "'&(copy|#169);'i",
-						 "'&#(\d+);'e",
+						 "'&#(\d+);'i",
 						 "'&(frasl|#8260);'i");             // интерпретировать как php-код
 
 		$replace = array ("",
@@ -519,7 +522,10 @@ function createProduct($data='',$modif='false', $custom_id='0',$harakt='',$cvid,
 						  "",
 						  "_");
 		
-		$slug_str = preg_replace($search, $replace, $slug_str);
+	// SirPiter 	$slug_str = preg_replace($search, $replace, $slug_str);
+		$slug_str = preg_replace($search,
+		    $replace,
+		    $slug_str);
 		
 		//$slug_str = preg_replace("~[^-0-9A-Z_]~isU","",$slug_str);
 		
@@ -570,7 +576,7 @@ function createProduct($data='',$modif='false', $custom_id='0',$harakt='',$cvid,
 						 "'&(cent|#162);'i",
 						 "'&(pound|#163);'i",
 						 "'&(copy|#169);'i",
-						 "'&#(\d+);'e",
+						 "'&#(\d+);'i",
 						 "'\"'i",
 						 "'•'i",
 						 "'&#149;'i",
@@ -597,6 +603,7 @@ function createProduct($data='',$modif='false', $custom_id='0',$harakt='',$cvid,
 						  "");
 		
 		$key_meta = preg_replace($search2, $replace2, $data['description']);
+		//$key_meta = preg_replace_callback($search2, $replace2, $data['description']);
 		
 		$data['metakey'] = str_replace(" ", ", ", $key_meta);
 		$data['metadesc'] = $data['description'];
@@ -604,7 +611,8 @@ function createProduct($data='',$modif='false', $custom_id='0',$harakt='',$cvid,
 		$data['metaauthor'] = str_replace("\n", "", $username);
 	}
 	
-	$sql = "SELECT category_id FROM #__".$dba['category_to_1c_db']." where `c_category_id` = '" . $db->getEscaped($data['category_1c_id']) . "'";
+//SirPiter 	//$sql = "SELECT category_id FROM #__".$dba['category_to_1c_db']." where `c_category_id` = '" . $db->getEscaped($data['category_1c_id']) . "'";
+	$sql = "SELECT category_id FROM #__".$dba['category_to_1c_db']." where `c_category_id` = '" . $db->Escape($data['category_1c_id']) . "'";
 	$db->setQuery ( $sql );
 	$rows_sub_Count = $db->loadResult ();
 	
@@ -614,17 +622,21 @@ function createProduct($data='',$modif='false', $custom_id='0',$harakt='',$cvid,
 	}
 	else
 	{
-		$log->addEntry ( array ('comment' => 'Этап 4.1.3) Неудача: Товар '.$data['name'].' пропущен, нет категории - ' . $data['category_1c_id'] ) );
-		$logs_http[] = "<strong>Загрузка товара</strong> - <strong><font color='red'>Неудача:</font></strong> Товар <strong>".$data['name']."</strong> пропущен, нет категории - <strong>" . $data['category_1c_id']."</strong>";
-		$log->addEntry ( array ('comment' => 'Этап 4.1.3) ' . $sql ) );
-		
+		//$log->addEntry ( array ('comment' => 'Этап 4.1.3) Неудача: Товар '.$data['name'].' пропущен, нет категории - ' . $data['category_1c_id'] ) );
+	    JLog::add ( 'Этап 4.1.3) Неудача: Товар '.$data['name'].' пропущен, нет категории - ' . $data['category_1c_id'], JLog::ERROR, 'vmshop_1c' );
+	    $logs_http[] = "<strong>Загрузка товара</strong> - <strong><font color='red'>Неудача:</font></strong> Товар <strong>".$data['name']."</strong> пропущен, нет категории - <strong>" . $data['category_1c_id']."</strong>";
+		//$log->addEntry ( array ('comment' => 'Этап 4.1.3) ' . $sql ) );
+	    JLog::add ( 'Этап 4.1.3) ' . $sql  , JLog::ERROR, 'vmshop_1c' );
+	    
 		$category_id = 0;
 		//echo 'failure\n';
 		//echo 'error category_id';
 	}
 		
-	$sql = "SELECT product_id FROM #__".$dba['product_to_1c_db']." where `c_id` = '" . $db->getEscaped($data['id']) . "'";
+	//SirPiter 	$sql = "SELECT product_id FROM #__".$dba['product_to_1c_db']." where `c_id` = '" . $db->getEscaped($data['id']) . "'";
+	$sql = "SELECT product_id FROM #__".$dba['product_to_1c_db']." where `c_id` = '" . $db->Escape($data['id']) . "'";
 	$db->setQuery ( $sql );
+	
 	$rows_sub_Count = $db->loadResult ();
 							
 	if(isset ( $rows_sub_Count ) and $rows_sub_Count != '') 
@@ -648,12 +660,16 @@ function createProduct($data='',$modif='false', $custom_id='0',$harakt='',$cvid,
 			if ($db->query ())
 			{
 				$logs_http[] = "<strong>Загрузка товара</strong> - Выполнен запрос № 0: (<strong>".$query."</strong>)";
-				$log->addEntry ( array ('comment' => 'Этап 4.1.1) Выполнен запрос № 0: ('.$query.')') );
+				//$log->addEntry ( array ('comment' => 'Этап 4.1.1) Выполнен запрос № 0: ('.$query.')') );
+				JLog::add ( 'Этап 4.1.3(product.php) Выполнен запрос № 0: ('.$query.')' , JLog::INFO, 'vmshop_1c' );
+				
 			}
 			else
 			{
 				$logs_http[] = "<strong>Загрузка товара</strong> - <strong><font color='red'>Неудача:</font></strong> Ошибка запроса № 0: (<strong>".$query."</strong>)";
-				$log->addEntry ( array ('comment' => 'Этап 4.1.1) Неудача: Ошибка запроса № 0: ('.$query.')') );
+				//$log->addEntry ( array ('comment' => 'Этап 4.1.1) Неудача: Ошибка запроса № 0: ('.$query.')') );
+				JLog::add ( 'Этап 4.1.3(product.php) Неудача: Ошибка запроса № 0: ('.$query.')' , JLog::ERROR, 'vmshop_1c' );
+				
 			}
 			
 			foreach($table_del as $key => $table_del_sql)
@@ -663,17 +679,23 @@ function createProduct($data='',$modif='false', $custom_id='0',$harakt='',$cvid,
 				if ($db->query ())
 				{
 					$logs_http[] = "<strong>Загрузка товара</strong> - Выполнен запрос № ".$key.": (<strong>".$sql."</strong>)";
-					$log->addEntry ( array ('comment' => 'Этап 4.1.1) Выполнен запрос № '.$key.': ('.$sql.')') );
+					//$log->addEntry ( array ('comment' => 'Этап 4.1.1) Выполнен запрос № '.$key.': ('.$sql.')') );
+					JLog::add ( 'Этап 4.1.3(product.php) Выполнен запрос № '.$key.': ('.$sql.')' , JLog::INFO, 'vmshop_1c' );
+					
 				}
 				else
 				{
 					$logs_http[] = "<strong>Загрузка товара</strong> - <strong><font color='red'>Неудача:</font></strong> Ошибка запроса № ".$key.": (<strong>".$sql."</strong>)";
-					$log->addEntry ( array ('comment' => 'Этап 4.1.1) Неудача: Ошибка запроса № '.$key.': ('.$sql.')') );
+					//$log->addEntry ( array ('comment' => 'Этап 4.1.1) Неудача: Ошибка запроса № '.$key.': ('.$sql.')') );
+					JLog::add ( 'Этап 4.1.3(product.php) Неудача: Ошибка запроса № '.$key.': ('.$sql.')' , JLog::ERROR, 'vmshop_1c' );
+					
 				}
 			}
 
 			$logs_http[] = "<strong>Загрузка товара</strong> - Товар id - <strong>".$rows_sub_Count."</strong> удален";
-			$log->addEntry ( array ('comment' => 'Этап 4.1.3) Товар id - ' . $rows_sub_Count . ' удален') );
+//			$log->addEntry ( array ('comment' => 'Этап 4.1.3) Товар id - ' . $rows_sub_Count . ' удален') );
+			JLog::add ( 'Этап 4.1.3(product.php) Товар id - ' . $rows_sub_Count . ' удален' , JLog::INFO, 'vmshop_1c' );
+			
 		}
 		elseif($data['status'] == 'Обновить')  // добавил проверку, чтобы убрать обновление товара. SirPiter
 		{
@@ -741,7 +763,8 @@ function createProduct($data='',$modif='false', $custom_id='0',$harakt='',$cvid,
 				
 				$logs_http[] = "<strong>Загрузка товара</strong> - Обновляем товар id - <strong>".$rows_sub_Count."</strong>, наименование - <strong>".$product_name."</strong>";
 				
-				$log->addEntry ( array ('comment' => 'Этап 4.1.3) Обновляем товар id - ' . $rows_sub_Count . ', наименование - '.$product_name) );
+				//$log->addEntry ( array ('comment' => 'Этап 4.1.3) Обновляем товар id - ' . $rows_sub_Count . ', наименование - '.$product_name) );
+				JLog::add ( 'Этап 4.1.3(product.php) Обновляем товар id - ' . $rows_sub_Count . ', наименование - '.$product_name , JLog::INFO, 'vmshop_1c' );
 				
 				if ($product_sku != $data['art'])
 				{
@@ -865,9 +888,11 @@ function createProduct($data='',$modif='false', $custom_id='0',$harakt='',$cvid,
 					$db->setQuery ( $sql );
 					if (!$db->query ())
 					{
-						$log->addEntry ( array ('comment' => 'Этап 4.1.3) Неудача: Невозможно обновить продукт id - ' . $rows_sub_Count ) );
-						$log->addEntry ( array ('comment' => 'Этап 4.1.3) ' . $sql ) );
-						if(!defined( 'VM_SITE' ))
+						//$log->addEntry ( array ('comment' => 'Этап 4.1.3) Неудача: Невозможно обновить продукт id - ' . $rows_sub_Count ) );
+						//$log->addEntry ( array ('comment' => 'Этап 4.1.3) ' . $sql ) );
+					    JLog::add ( 'Этап 4.1.3) Неудача: Невозможно обновить продукт id - ' . $rows_sub_Count , JLog::ERROR, 'vmshop_1c' );
+					    JLog::add ( 'Этап 4.1.3) ' . $sql , JLog::ERROR, 'vmshop_1c' );
+					    if(!defined( 'VM_SITE' ))
 						{
 							echo 'failure\n';
 							echo 'error mysql update\n';
@@ -902,9 +927,11 @@ function createProduct($data='',$modif='false', $custom_id='0',$harakt='',$cvid,
 					$db->setQuery ( $sql );
 					if (!$db->query ())
 					{
-						$log->addEntry ( array ('comment' => 'Этап 4.1.3) Неудача: Невозможно обновить продукт id - ' . $rows_sub_Count ) );
-						$log->addEntry ( array ('comment' => 'Этап 4.1.3) ' . $sql ) );
-						if(!defined( 'VM_SITE' ))
+						//$log->addEntry ( array ('comment' => 'Этап 4.1.3) Неудача: Невозможно обновить продукт id - ' . $rows_sub_Count ) );
+						//$log->addEntry ( array ('comment' => 'Этап 4.1.3) ' . $sql ) );
+					    JLog::add ( 'Этап 4.1.3) Неудача: Невозможно обновить продукт id - ' . $rows_sub_Count , JLog::ERROR, 'vmshop_1c' );
+					    JLog::add ( 'Этап 4.1.3) ' . $sql , JLog::ERROR, 'vmshop_1c' );
+					    if(!defined( 'VM_SITE' ))
 						{
 							echo 'failure\n';
 							echo 'error mysql update\n';
@@ -939,9 +966,11 @@ continue; //Аматор. Попробуем не удалять существ�
 						$db->setQuery ( $sql_2 );
 						if (!$db->query ())
 						{
-							$log->addEntry ( array ('comment' => 'Этап 4.1.3) Неудача: Невозможно обновить основную картинку id - ' . $rows_sub_Count ) );
-							$log->addEntry ( array ('comment' => 'Этап 4.1.3) ' . $sql_2 ) );
-							if(!defined( 'VM_SITE' ))
+							//$log->addEntry ( array ('comment' => 'Этап 4.1.3) Неудача: Невозможно обновить основную картинку id - ' . $rows_sub_Count ) );
+							//$log->addEntry ( array ('comment' => 'Этап 4.1.3) ' . $sql_2 ) );
+						    JLog::add ( 'Этап 4.1.3) Неудача: Невозможно обновить основную картинку id - ' . $rows_sub_Count , JLog::ERROR, 'vmshop_1c' );
+						    JLog::add ( 'Этап 4.1.3) ' . $sql_2 , JLog::ERROR, 'vmshop_1c' );
+						    if(!defined( 'VM_SITE' ))
 							{
 								echo 'failure\n';
 								echo 'error mysql update\n';
@@ -966,9 +995,11 @@ continue; //Аматор. Попробуем не удалять существ�
 						$db->setQuery ( $sql_3 );
 						if (!$db->query ())
 						{
-							$log->addEntry ( array ('comment' => 'Этап 4.1.3) Неудача: Невозможно обновить основную картинку id - ' . $rows_sub_Count ) );
-							$log->addEntry ( array ('comment' => 'Этап 4.1.3) ' . $sql_3 ) );
-							if(!defined( 'VM_SITE' ))
+							//$log->addEntry ( array ('comment' => 'Этап 4.1.3) Неудача: Невозможно обновить основную картинку id - ' . $rows_sub_Count ) );
+							//$log->addEntry ( array ('comment' => 'Этап 4.1.3) ' . $sql_3 ) );
+						    JLog::add ( 'Этап 4.1.3) Неудача: Невозможно обновить основную картинку id - ' . $rows_sub_Count , JLog::ERROR, 'vmshop_1c' );
+						    JLog::add ( 'Этап 4.1.3) ' . $sql_3 , JLog::ERROR, 'vmshop_1c' );
+						    if(!defined( 'VM_SITE' ))
 							{
 								echo 'failure\n';
 								echo 'error mysql update\n';
@@ -1013,8 +1044,9 @@ continue; //Аматор. Попробуем не удалять существ�
 //+Аматор Проверим, нет ли уже картинки с таким УРЛ в базе
 
 							$sql1 = "SELECT * FROM #__".DBBASE."_medias where `file_url` like '%" .str_replace(JPATH_PICTURE.DS, "", $ins->file_url) . "'";
-$log->addEntry ( array ('comment' => 'Аматор 5) id - ' . $sql1 ) );
-
+//$log->addEntry ( array ('comment' => 'Аматор 5) id - ' . $sql1 ) );
+							JLog::add ( 'Аматор 5) id - ' . $sql1 , JLog::INFO, 'vmshop_1c' );
+							
 
 						
 							$db->setQuery ( $sql1 );
@@ -1022,7 +1054,9 @@ $log->addEntry ( array ('comment' => 'Аматор 5) id - ' . $sql1 ) );
 							if (!$rows1) {
 
 //-Аматор					
-$log->addEntry ( array ('comment' => 'Аматор 8: Добавляем медиа)') );							
+//$log->addEntry ( array ('comment' => 'Аматор 8: Добавляем медиа)') );
+							    JLog::add ( 'Аматор 8: Добавляем медиа)' , JLog::INFO, 'vmshop_1c' );
+							    
 						$ins->file_url_thumb = JPATH_PICTURE.DS.$small_img;
 						$ins->file_is_product_image = '1';
 						$ins->file_is_downloadable = '0';
@@ -1038,8 +1072,9 @@ $log->addEntry ( array ('comment' => 'Аматор 8: Добавляем мед�
 					
 						if (! $db->insertObject ( '#__'.DBBASE.'_medias', $ins, 'virtuemart_media_id' )) 
 						{
-							$log->addEntry ( array ('comment' => 'Этап 4.1.3) Неудача: Невозможно вставить запись в таблицу - '.DBBASE.'_medias' ) );
-							if(!defined( 'VM_SITE' ))
+							//$log->addEntry ( array ('comment' => 'Этап 4.1.3) Неудача: Невозможно вставить запись в таблицу - '.DBBASE.'_medias' ) );
+						    JLog::add ( 'Этап 4.1.3) Неудача: Невозможно вставить запись в таблицу - '.DBBASE.'_medias' , JLog::ERROR, 'vmshop_1c' );
+						    if(!defined( 'VM_SITE' ))
 							{
 								echo 'failure\n';
 								echo 'error mysql';
@@ -1069,8 +1104,9 @@ $log->addEntry ( array ('comment' => 'Аматор 8: Добавляем мед�
 						
 						if (! $db->insertObject ( '#__'.DBBASE.'_product_medias', $ins )) 
 						{
-							$log->addEntry ( array ('comment' => 'Этап 4.1.3) Неудача: Невозможно вставить запись в таблицу - '.DBBASE.'_product_medias' ) );
-							if(!defined( 'VM_SITE' ))
+							//$log->addEntry ( array ('comment' => 'Этап 4.1.3) Неудача: Невозможно вставить запись в таблицу - '.DBBASE.'_product_medias' ) );
+						    JLog::add ( 'Этап 4.1.3) Неудача: Невозможно вставить запись в таблицу - '.DBBASE.'_product_medias' , JLog::ERROR, 'vmshop_1c' );
+						    if(!defined( 'VM_SITE' ))
 							{
 								echo 'failure\n';
 								echo 'error mysql';
@@ -1090,8 +1126,9 @@ $log->addEntry ( array ('comment' => 'Аматор 8: Добавляем мед�
 						}
 					}
 else {
-$log->addEntry ( array ('comment' => 'Аматор 9: Картинка уже есть в базе)') );
-
+//$log->addEntry ( array ('comment' => 'Аматор 9: Картинка уже есть в базе)') );
+    JLog::add ( 'Аматор 9: Картинка уже есть в базе)' , JLog::INFO, 'vmshop_1c' );
+    
 
 }
 				}
@@ -1148,8 +1185,9 @@ $log->addEntry ( array ('comment' => 'Аматор 9: Картинка уже е
 //+Аматор Проверим, нет ли уже картинки с таким УРЛ в базе
 						
 							$sql1 = "SELECT * FROM #__".DBBASE."_medias where `file_url` like '%" .str_replace(JPATH_PICTURE.DS, "", $ins->file_url) . "'";
-$log->addEntry ( array ('comment' => 'Аматор 3) id - ' . $sql1 ) );
-
+//$log->addEntry ( array ('comment' => 'Аматор 3) id - ' . $sql1 ) );
+							JLog::add ( 'Аматор 3) id - ' . $sql1 , JLog::INFO, 'vmshop_1c' );
+							
 						
 							$db->setQuery ( $sql1 );
 							$rows1 = $db->loadObject ();
@@ -1173,8 +1211,9 @@ $log->addEntry ( array ('comment' => 'Аматор 3) id - ' . $sql1 ) );
 							
 							if (! $db->insertObject ( '#__'.DBBASE.'_medias', $ins, 'virtuemart_media_id' )) 
 							{
-								$log->addEntry ( array ('comment' => 'Этап 4.1.3) Неудача: Невозможно вставить запись в таблицу - '.DBBASE.'_medias' ) );
-								if(!defined( 'VM_SITE' ))
+								//$log->addEntry ( array ('comment' => 'Этап 4.1.3) Неудача: Невозможно вставить запись в таблицу - '.DBBASE.'_medias' ) );
+							    JLog::add ( 'Этап 4.1.3) Неудача: Невозможно вставить запись в таблицу - '.DBBASE.'_medias' , JLog::ERROR, 'vmshop_1c' );
+							    if(!defined( 'VM_SITE' ))
 								{
 									echo 'failure\n';
 									echo 'error mysql';
@@ -1203,8 +1242,9 @@ $log->addEntry ( array ('comment' => 'Аматор 3) id - ' . $sql1 ) );
 							
 							if (! $db->insertObject ( '#__'.DBBASE.'_product_medias', $ins )) 
 							{
-								$log->addEntry ( array ('comment' => 'Этап 4.1.3) Неудача: Невозможно вставить запись в таблицу - '.DBBASE.'_product_medias' ) );
-								if(!defined( 'VM_SITE' ))
+								//$log->addEntry ( array ('comment' => 'Этап 4.1.3) Неудача: Невозможно вставить запись в таблицу - '.DBBASE.'_product_medias' ) );
+							    JLog::add ( 'Этап 4.1.3) Неудача: Невозможно вставить запись в таблицу - '.DBBASE.'_product_medias' , JLog::ERROR, 'vmshop_1c' );
+							    if(!defined( 'VM_SITE' ))
 								{
 									echo 'failure\n';
 									echo 'error mysql';
@@ -1295,9 +1335,11 @@ $log->addEntry ( array ('comment' => 'Аматор 3) id - ' . $sql1 ) );
 									$db->setQuery ( $sql );
 									if (!$db->query ())
 									{
-										$log->addEntry ( array ('comment' => 'Этап 4.1.3) Неудача: Невозможно обновить дополнительную картинку id - ' . $file_id ) );
-										$log->addEntry ( array ('comment' => 'Этап 4.1.3) ' . $sql ) );
-										if(!defined( 'VM_SITE' ))
+										//$log->addEntry ( array ('comment' => 'Этап 4.1.3) Неудача: Невозможно обновить дополнительную картинку id - ' . $file_id ) );
+										//$log->addEntry ( array ('comment' => 'Этап 4.1.3) ' . $sql ) );
+									    JLog::add ( 'Этап 4.1.3) Неудача: Невозможно обновить дополнительную картинку id - ' . $file_id  , JLog::ERROR, 'vmshop_1c' );
+									    JLog::add ( 'Этап 4.1.3) ' . $sql , JLog::ERROR, 'vmshop_1c' );
+									    if(!defined( 'VM_SITE' ))
 										{
 											echo 'failure\n';
 											echo 'error mysql update\n';
@@ -1346,7 +1388,9 @@ $log->addEntry ( array ('comment' => 'Аматор 3) id - ' . $sql1 ) );
 															
 								if (! $db->insertObject ( '#__'.DBBASE.'_product_files', $ins, 'file_id' )) 
 								{
-									$log->addEntry ( array ('comment' => 'Этап 4.1.3) Неудача: Невозможно вставить запись в таблицу - vm_product_files' ) );
+									//$log->addEntry ( array ('comment' => 'Этап 4.1.3) Неудача: Невозможно вставить запись в таблицу - vm_product_files' ) );
+								    JLog::add ( 'Этап 4.1.3) Неудача: Невозможно вставить запись в таблицу - vm_product_files'  , JLog::ERROR, 'vmshop_1c' );
+								    
 									if(!defined( 'VM_SITE' ))
 									{
 										echo 'failure\n';
@@ -1372,7 +1416,9 @@ $log->addEntry ( array ('comment' => 'Аматор 3) id - ' . $sql1 ) );
 			}
 			else
 			{
-				$log->addEntry ( array ('comment' => 'Этап 4.1.3) Неудача: Нет данных по продукту id - ' . $rows_sub_Count ) );
+				//$log->addEntry ( array ('comment' => 'Этап 4.1.3) Неудача: Нет данных по продукту id - ' . $rows_sub_Count ) );
+			    JLog::add ( 'Этап 4.1.3) Неудача: Нет данных по продукту id - ' . $rows_sub_Count , JLog::ERROR, 'vmshop_1c' );
+			    
 				if(!defined( 'VM_SITE' ))
 				{
 					echo 'failure\n';
@@ -1399,8 +1445,9 @@ $log->addEntry ( array ('comment' => 'Аматор 3) id - ' . $sql1 ) );
 		//Добавляем новый товар
 		if ($data['status'] != 'Удален' and $category_id <> 0)
 		{
-			$log->addEntry ( array ('comment' => '--------------Добавляем товар: '.$data['name'].'--------------' ) );
-			$logs_http[] = "<strong>Загрузка товара</strong> - --------------Добавляем товар: <strong>".$data['name']."</strong>--------------";
+		//	$log->addEntry ( array ('comment' => '--------------Добавляем товар: '.$data['name'].'--------------' ) );
+		    JLog::add ( '--------------Добавляем товар: '.$data['name'].'--------------' , JLog::INFO, 'vmshop_1c' );
+		    $logs_http[] = "<strong>Загрузка товара</strong> - --------------Добавляем товар: <strong>".$data['name']."</strong>--------------";
 			
 			if (VM_VERVM == '2')
 			{
@@ -1516,11 +1563,15 @@ $log->addEntry ( array ('comment' => 'Аматор 3) id - ' . $sql1 ) );
 					$ins->product_availability = "on-order.gif";					//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 				}
 			}
-				
+			
+			JLog::add ( 'Этап 4.1.3) Пытаемся вставить запись в таблицу - '.$dba['product_db'] , JLog::INFO, 'vmshop_1c' );
+	//		JLog::add ( 'Этап 4.1.3) '. print_r($ins) , JLog::INFO, 'vmshop_1c' );
+			
 			if (! $db->insertObject ( '#__'.$dba['product_db'], $ins, $dba['pristavka'].'product_id' )) 
 			{
-				$log->addEntry ( array ('comment' => 'Этап 4.1.3) Неудача: Невозможно вставить запись в таблицу - '.$dba['product_db'] ) );
-				if(!defined( 'VM_SITE' ))
+				//$log->addEntry ( array ('comment' => 'Этап 4.1.3) Неудача: Невозможно вставить запись в таблицу - '.$dba['product_db'] ) );
+			    JLog::add ( 'Этап 4.1.3) Неудача: Невозможно вставить запись в таблицу - '.$dba['product_db'] , JLog::ERROR, 'vmshop_1c' );
+			    if(!defined( 'VM_SITE' ))
 				{
 					echo 'failure\n';
 					echo 'error mysql\n';
@@ -1563,8 +1614,9 @@ $log->addEntry ( array ('comment' => 'Аматор 3) id - ' . $sql1 ) );
 				
 				if (! $db->insertObject ( '#__'.$dba['product_ln_db'], $ins )) 
 				{
-					$log->addEntry ( array ('comment' => 'Этап 4.1.3) Неудача: Таблица '.$dba['product_ln_db'].' Невозможно вставить запись для продукта - '.$data['name'] ) );
-					if(!defined( 'VM_SITE' ))
+					//$log->addEntry ( array ('comment' => 'Этап 4.1.3) Неудача: Таблица '.$dba['product_ln_db'].' Невозможно вставить запись для продукта - '.$data['name'] ) );
+				    JLog::add ( 'Этап 4.1.3) Неудача: Таблица '.$dba['product_ln_db'].' Невозможно вставить запись для продукта - '.$data['name'] , JLog::ERROR, 'vmshop_1c' );
+				    if(!defined( 'VM_SITE' ))
 					{
 						echo 'failure\n';
 						echo 'error mysql\n';
@@ -1609,8 +1661,9 @@ $log->addEntry ( array ('comment' => 'Аматор 3) id - ' . $sql1 ) );
 			
 			if (! $db->insertObject ( '#__'.$dba['product_category_xref_db'], $ins )) 
 			{
-				$log->addEntry ( array ('comment' => 'Этап 4.1.3) Неудача: Невозможно вставить запись в таблицу - '.$dba['product_category_xref_db'] ) );
-				if(!defined( 'VM_SITE' ))
+				//$log->addEntry ( array ('comment' => 'Этап 4.1.3) Неудача: Невозможно вставить запись в таблицу - '.$dba['product_category_xref_db'] ) );
+			    JLog::add ( 'Этап 4.1.3) Неудача: Невозможно вставить запись в таблицу - '.$dba['product_category_xref_db'] , JLog::ERROR, 'vmshop_1c' );
+			    if(!defined( 'VM_SITE' ))
 				{
 					echo 'failure\n';
 					echo 'error mysql\n';
@@ -1631,13 +1684,24 @@ $log->addEntry ( array ('comment' => 'Аматор 3) id - ' . $sql1 ) );
 			
 			$ins = new stdClass ();
 			$ins->product_id = ( int )$produkt_id;
-			$ins->c_id = (string)$db->getEscaped($data['id']);
+//SirPiter			$ins->c_id = (string)$db->getEscaped($data['id']);
+			$ins->c_id = (string)$db->Escape($data['id']);
 			$ins->tax_id = (int)$data['nds'];
+			
+			JLog::add ( 'Этап 4.1.3) Пытаемся вставить запись в таблицу - '.$dba['product_to_1c_db'] , JLog::INFO, 'vmshop_1c' );
+			
+//			print_r($data['id']);
+//			print_r($db);
+			
+			JLog::add ( 'Этап 4.1.3) '.$ins->c_id , JLog::INFO, 'vmshop_1c' );
+//			print_r($ins);
+			
 			
 			if (! $db->insertObject ( '#__'.$dba['product_to_1c_db'], $ins )) 
 			{
-				$log->addEntry ( array ('comment' => 'Этап 4.1.3) Неудача: Невозможно вставить запись в таблицу - '.$dba['product_to_1c_db'] ) );
-				if(!defined( 'VM_SITE' ))
+				//$log->addEntry ( array ('comment' => 'Этап 4.1.3) Неудача: Невозможно вставить запись в таблицу - '.$dba['product_to_1c_db'] ) );
+			    JLog::add ( 'Этап 4.1.3) Неудача: Невозможно вставить запись в таблицу - '.$dba['product_to_1c_db'] , JLog::ERROR, 'vmshop_1c' );
+			    if(!defined( 'VM_SITE' ))
 				{
 					echo 'failure\n';
 					echo 'error mysql\n';
@@ -1687,8 +1751,9 @@ $log->addEntry ( array ('comment' => 'Аматор 3) id - ' . $sql1 ) );
 				
 				if (! $db->insertObject ( '#__'.$dba['product_mf_xref_db'], $ins )) 
 				{
-					$log->addEntry ( array ('comment' => 'Этап 4.1.3) Неудача: Невозможно вставить запись в таблицу - '.$dba['product_mf_xref_db'] ) );
-					if(!defined( 'VM_SITE' ))
+					//$log->addEntry ( array ('comment' => 'Этап 4.1.3) Неудача: Невозможно вставить запись в таблицу - '.$dba['product_mf_xref_db'] ) );
+				    JLog::add ( 'Этап 4.1.3) Неудача: Невозможно вставить запись в таблицу - '.$dba['product_mf_xref_db'] , JLog::ERROR, 'vmshop_1c' );
+				    if(!defined( 'VM_SITE' ))
 					{
 						echo 'failure\n';
 						echo 'error mysql\n';
@@ -1734,7 +1799,8 @@ $log->addEntry ( array ('comment' => 'Аматор 3) id - ' . $sql1 ) );
 //+Аматор Проверим, нет ли уже картинки с таким УРЛ в базе
 
 							$sql1 = "SELECT * FROM #__".DBBASE."_medias where `file_url` = '" . $ins->file_url . "'";
-$log->addEntry ( array ('comment' => 'Аматор 7) id - ' . $sql1 ) );						
+//$log->addEntry ( array ('comment' => 'Аматор 7) id - ' . $sql1 ) );						
+							JLog::add ( 'Аматор 7) id - ' . $sql1 , JLog::INFO, 'vmshop_1c' );
 							$db->setQuery ( $sql1 );
 							$rows1 = $db->loadObject ();
 						//	if ($rows1) {continue;}
@@ -1756,8 +1822,9 @@ $log->addEntry ( array ('comment' => 'Аматор 7) id - ' . $sql1 ) );
 					
 				if (! $db->insertObject ( '#__'.DBBASE.'_medias', $ins, 'virtuemart_media_id' )) 
 				{
-					$log->addEntry ( array ('comment' => 'Этап 4.1.3) Неудача: Невозможно вставить запись в таблицу - '.DBBASE.'_medias' ) );
-					if(!defined( 'VM_SITE' ))
+					//$log->addEntry ( array ('comment' => 'Этап 4.1.3) Неудача: Невозможно вставить запись в таблицу - '.DBBASE.'_medias' ) );
+				    JLog::add ( 'Этап 4.1.3) Неудача: Невозможно вставить запись в таблицу - '.DBBASE.'_medias' , JLog::ERROR, 'vmshop_1c' );
+				    if(!defined( 'VM_SITE' ))
 					{
 						echo 'failure\n';
 						echo 'error mysql\n';
@@ -1786,8 +1853,9 @@ $log->addEntry ( array ('comment' => 'Аматор 7) id - ' . $sql1 ) );
 				
 				if (! $db->insertObject ( '#__'.DBBASE.'_product_medias', $ins )) 
 				{
-					$log->addEntry ( array ('comment' => 'Этап 4.1.3) Неудача: Невозможно вставить запись в таблицу - '.DBBASE.'_product_medias' ) );
-					if(!defined( 'VM_SITE' ))
+					//$log->addEntry ( array ('comment' => 'Этап 4.1.3) Неудача: Невозможно вставить запись в таблицу - '.DBBASE.'_product_medias' ) );
+				    JLog::add ( 'Этап 4.1.3) Неудача: Невозможно вставить запись в таблицу - '.DBBASE.'_product_medias' , JLog::ERROR, 'vmshop_1c' );
+				    if(!defined( 'VM_SITE' ))
 					{
 						echo 'failure\n';
 						echo 'error mysql\n';
@@ -1877,8 +1945,9 @@ $log->addEntry ( array ('comment' => 'Аматор 7) id - ' . $sql1 ) );
 							
 						if (! $db->insertObject ( '#__'.DBBASE.'_medias', $ins, 'virtuemart_media_id' )) 
 						{
-							$log->addEntry ( array ('comment' => 'Этап 4.1.3) Неудача: Невозможно вставить запись в таблицу - '.DBBASE.'_medias' ) );
-							if(!defined( 'VM_SITE' ))
+							//$log->addEntry ( array ('comment' => 'Этап 4.1.3) Неудача: Невозможно вставить запись в таблицу - '.DBBASE.'_medias' ) );
+						    JLog::add ( 'Этап 4.1.3) Неудача: Невозможно вставить запись в таблицу - '.DBBASE.'_medias' , JLog::ERROR, 'vmshop_1c' );
+						    if(!defined( 'VM_SITE' ))
 							{
 								echo 'failure\n';
 								echo 'error mysql\n';
@@ -1907,8 +1976,9 @@ $log->addEntry ( array ('comment' => 'Аматор 7) id - ' . $sql1 ) );
 						
 						if (! $db->insertObject ( '#__'.DBBASE.'_product_medias', $ins )) 
 						{
-							$log->addEntry ( array ('comment' => 'Этап 4.1.3) Неудача: Невозможно вставить запись в таблицу - '.DBBASE.'_product_medias' ) );
-							if(!defined( 'VM_SITE' ))
+							//$log->addEntry ( array ('comment' => 'Этап 4.1.3) Неудача: Невозможно вставить запись в таблицу - '.DBBASE.'_product_medias' ) );
+						    JLog::add ( 'Этап 4.1.3) Неудача: Невозможно вставить запись в таблицу - '.DBBASE.'_product_medias' , JLog::ERROR, 'vmshop_1c' );
+						    if(!defined( 'VM_SITE' ))
 							{
 								echo 'failure\n';
 								echo 'error mysql\n';
@@ -1954,8 +2024,9 @@ $log->addEntry ( array ('comment' => 'Аматор 7) id - ' . $sql1 ) );
 													
 						if (! $db->insertObject ( '#__'.$dba['product_files_db'], $ins, 'file_id' )) 
 						{
-							$log->addEntry ( array ('comment' => 'Этап 4.1.3) Неудача: Невозможно вставить запись в таблицу - '.$dba['product_files_db'] ) );
-							if(!defined( 'VM_SITE' ))
+							//$log->addEntry ( array ('comment' => 'Этап 4.1.3) Неудача: Невозможно вставить запись в таблицу - '.$dba['product_files_db'] ) );
+						    JLog::add ( 'Этап 4.1.3) Неудача: Невозможно вставить запись в таблицу - '.$dba['product_files_db'] , JLog::ERROR, 'vmshop_1c' );
+						    if(!defined( 'VM_SITE' ))
 							{
 								echo 'failure\n';
 								echo 'error mysql\n';
@@ -1978,7 +2049,8 @@ $log->addEntry ( array ('comment' => 'Аматор 7) id - ' . $sql1 ) );
 			}
 			
 			$logs_http[] = "<strong>Загрузка товара</strong> - Товар - <strong>".$data['name']."</strong> добавлен";
-			$log->addEntry ( array ('comment' => 'Этап 4.1.3) Товар - ' . $data['name'] . ' добавлен') );
+			//$log->addEntry ( array ('comment' => 'Этап 4.1.3) Товар - ' . $data['name'] . ' добавлен') );
+			JLog::add ( 'Этап 4.1.3) Товар - ' . $data['name'] . ' добавлен' , JLog::INFO, 'vmshop_1c' );
 			
 		}
 		

@@ -19,8 +19,10 @@ else
 {
 	$upload = 'файлы без архива';
 }
-$log->addEntry ( array ('comment' => 'Этап 2) Выгружаем '.$upload) );	
+//$log->addEntry ( array ('comment' => 'Этап 2) Выгружаем '.$upload) );	
+JLog::add ( 'Этап 2) Выгружаем '.$upload, JLog::INFO, 'vmshop_1c' );
 print "zip=".VM_ZIP."\n";
 print "file_limit=".VM_ZIPSIZE."\n";
-$log->addEntry ( array ('comment' => 'Этап 2) Успешно') );
+//$log->addEntry ( array ('comment' => 'Этап 2) Успешно') );
+JLog::add ( 'Этап 2) Успешно', JLog::INFO, 'vmshop_1c' );
 ?>

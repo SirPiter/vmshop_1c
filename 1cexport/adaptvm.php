@@ -32,15 +32,21 @@ foreach ($name_db_sql as $name)
 		$db->setQuery ( $sql );
 		if (!$db->query ())
 		{
-			$log->addEntry ( array ('comment' => 'Неудача: Невозможно обновить vm_userfield поле '.$name ) );
-			$log->addEntry ( array ('comment' => $sql ) );
+			//$log->addEntry ( array ('comment' => 'Неудача: Невозможно обновить vm_userfield поле '.$name ) );
+		    JLog::add ( 'Неудача: Невозможно обновить vm_userfield поле '.$name, JLog::ERROR, 'vmshop_1c' );
+			
+			//$log->addEntry ( array ('comment' => $sql ) );
+		    JLog::add ( $sql, JLog::DEBUG, 'vmshop_1c' );
+		    
 			echo 'failure\n';
 			echo 'error mysql update\n';
 			echo $sql;
 		}
 		else
 		{
-			$log->addEntry ( array ('comment' => 'Поле '.$name.' обновлено' ) );
+			//$log->addEntry ( array ('comment' => 'Поле '.$name.' обновлено' ) );
+		    JLog::add ( 'Поле '.$name.' обновлено', JLog::DEBUG, 'vmshop_1c' );
+		    
 		}
 	}
 	elseif(!isset($adapt))
@@ -71,8 +77,12 @@ foreach ($name_db_sql as $name)
 			
 		if (! $db->insertObject ( '#__vm_userfield', $ins )) 
 		{
-			$log->addEntry ( array ('comment' => 'Неудача: Невозможно вставить поле '.$name ) );
-			$log->addEntry ( array ('comment' => $sql ) );
+			//$log->addEntry ( array ('comment' => 'Неудача: Невозможно вставить поле '.$name ) );
+		    JLog::add ( 'Неудача: Невозможно вставить поле '.$name, JLog::ERROR, 'vmshop_1c' );
+		    
+			//$log->addEntry ( array ('comment' => $sql ) );
+		    JLog::add ( $sql, JLog::ERROR, 'vmshop_1c' );
+		    
 			echo 'failure\n';
 			echo 'error mysql';
 			echo $sql;
@@ -82,15 +92,21 @@ foreach ($name_db_sql as $name)
 		$db->setQuery ( $sql );
 		if (!$db->query ())
 		{
-			$log->addEntry ( array ('comment' => 'Неудача: Невозможно обновить vm_order_user_info поле '.$name ) );
-			$log->addEntry ( array ('comment' => $sql ) );
+			//$log->addEntry ( array ('comment' => 'Неудача: Невозможно обновить vm_order_user_info поле '.$name ) );
+		    JLog::add ( 'Неудача: Невозможно обновить vm_order_user_info поле '.$name, JLog::ERROR, 'vmshop_1c' );
+		    
+			//$log->addEntry ( array ('comment' => $sql ) );
+			JLog::add ( $sql, JLog::ERROR, 'vmshop_1c' );
+			
 			echo 'failure\n';
 			echo 'error mysql update\n';
 			echo $sql;
 		}
 		else
 		{
-			$log->addEntry ( array ('comment' => 'Поле '.$name.' обновлено' ) );
+			//$log->addEntry ( array ('comment' => 'Поле '.$name.' обновлено' ) );
+		    JLog::add ( 'Поле '.$name.' обновлено', JLog::INFO, 'vmshop_1c' );
+		    
 		}
 	}
 }

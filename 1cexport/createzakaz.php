@@ -13,11 +13,11 @@ if ( !defined( 'VM_1CEXPORT' ) )
 $timechange = time ();
 
 $no_spaces = '<?xml version="1.0" encoding="UTF-8"?>
-							<КоммерческаяИнформация ВерсияСхемы="2.04" ДатаФормирования="' . date ( 'Y-m-d', $timechange ) . 'T' . date ( 'H:i:s', $timechange ) . '"></КоммерческаяИнформация>';
+							<КоммерческаяИнформация ВерсияСхемы="2.05" ДатаФормирования="' . date ( 'Y-m-d', $timechange ) . 'T' . date ( 'H:i:s', $timechange ) . '"></КоммерческаяИнформация>';
 
 $xml = new SimpleXMLElement ( $no_spaces );
 
-$db->setQuery ( "SELECT * FROM `#__".DBBASE."_orders` WHERE `order_status` LIKE 'P'" );  // SirPiter изменил запрос, добавив наименование статуса заказа
+$db->setQuery ( "SELECT * FROM `#__".DBBASE."_orders` WHERE `order_status` LIKE 'U'" );  // SirPiter изменил запрос, добавив наименование статуса заказа
 
 //$db->setQuery ( "SELECT *, #__virtuemart_orderstates.order_status_name FROM `#__".DBBASE."_orders`  
 //      		LEFT JOIN #__virtuemart_orderstates ON #__".DBBASE."_orders.order_status = #__virtuemart_orderstates.order_status_code 
@@ -218,7 +218,7 @@ $kom = $kom . ", Адрес доставки:". $clientST->city . " ". $clientST
 			$t1_4 = $t1_3->addChild ( "Наименование", "ВидНоменклатуры" );
 			$t1_4 = $t1_3->addChild ( "Значение", "Товар" );
 
-			$t1_2 = $t1_1->addChild ( "ЗначенияРеквизитов" );
+			//$t1_2 = $t1_1->addChild ( "ЗначенияРеквизитов" );
 			$t1_3 = $t1_2->addChild ( "ЗначениеРеквизита" );
 			$t1_4 = $t1_3->addChild ( "Наименование", "ТипНоменклатуры" );
 			$t1_4 = $t1_3->addChild ( "Значение", "Товар" );
@@ -312,6 +312,7 @@ $kom = $kom . ", Адрес доставки:". $clientST->city . " ". $clientST
 	}
 } 
 
+
 if (VM_CODING == 'UTF-8') 
 {
 	//header ( "Content-type: text/xml; charset=utf-8" );
@@ -322,7 +323,16 @@ else
 	print $xml->asXML ();
 }
 
-$log->addEntry ( array ('comment' => 'Этап 2) Успешно'.$xml->asXML () ) );
+
+//$xmlstr = $xml->asXML ();
+//echo $xmlstr;
+
+
+//$log->addEntry ( array ('comment' => 'Этап 2) Успешно'.$xml->asXML () ) );
+JLog::add ( 'Этап 2) Успешно'.$xml->asXML (), JLog::INFO, 'vmshop_1c' );
+//JLog::add ( 'Этап 2.1) Успешно'.$xmlstr, JLog::INFO, 'vmshop_1c' );
+
+
 unlink ( JPATH_BASE_1C .DS.'login.tmp' );
 
 ?>

@@ -140,7 +140,8 @@ function makeManufacture($data)
 		$sql = "SELECT manufacturer_id FROM #__".$dba['manufacturer_to_1c_db']." where `c_manufacturer_id` = '" . $data['id'] . "'";
 		$db->setQuery ( $sql );
 		$rows_sub_Count = $db->loadResult ();
-		$log->addEntry ( array ('comment' => 'Аматор 2: )'.$sql  ) );
+		//$log->addEntry ( array ('comment' => 'Аматор 2: )'.$sql  ) );
+		JLog::add ( 'Аматор 2: )'.$sql , JLog::INFO, 'vmshop_1c' );
 		if (isset($rows_sub_Count) and $rows_sub_Count != '')
 		{
 	
@@ -153,8 +154,9 @@ function makeManufacture($data)
 			
 			if (! $db->insertObject ( '#__'.$dba['manufacturer_to_1c_db'], $ins )) 
 			{
-				$log->addEntry ( array ('comment' => 'Этап 4.1.2) Неудача: Невозможно вставить запись в таблицу - '.$dba['manufacturer_to_1c_db'] ) );
-					
+				//$log->addEntry ( array ('comment' => 'Этап 4.1.2) Неудача: Невозможно вставить запись в таблицу - '.$dba['manufacturer_to_1c_db'] ) );
+			    JLog::add ( 'Этап 4.1.2) Неудача: Невозможно вставить запись в таблицу - '.$dba['manufacturer_to_1c_db']  , JLog::ERROR, 'vmshop_1c' );
+			    
 				if(!defined( 'VM_SITE' ))
 				{
 					echo 'failure\n';
@@ -172,7 +174,8 @@ function makeManufacture($data)
 		$sql = "SELECT virtuemart_manufacturer_id FROM #__".$dba['manufacturer_ln_db']." where `slug` = '" . (string)$data['slug'] . "'";
 		$db->setQuery ( $sql );
 		$rows_sub_Count = $db->loadResult ();
-		$log->addEntry ( array ('comment' => 'Аматор 4: )'.$sql  ) );
+		//$log->addEntry ( array ('comment' => 'Аматор 4: )'.$sql  ) );
+		JLog::add ( 'Аматор 4: )'.$sql  , JLog::INFO, 'vmshop_1c' );
 		if (!(isset($rows_sub_Count) and $rows_sub_Count != ''))
 		{
 	
@@ -193,8 +196,9 @@ function makeManufacture($data)
 			if (! $db->insertObject ( '#__'.$dba['manufacturer_db'], $ins, $dba['pristavka']."manufacturer_id" )) 
 			{
 				
-$log->addEntry ( array ('comment' => 'Этап 4.1.2) Неудача: Невозможно вставить запись в таблицу - '.$dba['manufacturer_db'] ) );
-				
+//$log->addEntry ( array ('comment' => 'Этап 4.1.2) Неудача: Невозможно вставить запись в таблицу - '.$dba['manufacturer_db'] ) );
+			    JLog::add ( 'Этап 4.1.2) Неудача: Невозможно вставить запись в таблицу - '.$dba['manufacturer_db']  , JLog::ERROR, 'vmshop_1c' );
+			    
 				if(!defined( 'VM_SITE' ))
 				{
 					echo 'failure\n';
@@ -268,10 +272,12 @@ $log->addEntry ( array ('comment' => 'Этап 4.1.2) Неудача: Невоз
 
 				if (! $db->insertObject ( '#__'.$dba['manufacturer_ln_db'], $ins )) 
 				{
-				$log->addEntry ( array ('comment' => 'Аматор 3: )'.$ins->mf_name ) );
-					
-				$log->addEntry ( array ('comment' => 'Этап 4.1.2) Неудача: Невозможно вставить запись в таблицу - '.$dba['manufacturer_ln_db'] ) );
-					
+				//$log->addEntry ( array ('comment' => 'Аматор 3: )'.$ins->mf_name ) );
+				    JLog::add ( 'Аматор 3: )'.$ins->mf_name , JLog::INFO, 'vmshop_1c' );
+				    
+				//$log->addEntry ( array ('comment' => 'Этап 4.1.2) Неудача: Невозможно вставить запись в таблицу - '.$dba['manufacturer_ln_db'] ) );
+				    JLog::add ( 'Этап 4.1.2) Неудача: Невозможно вставить запись в таблицу - '.$dba['manufacturer_ln_db'] , JLog::ERROR, 'vmshop_1c' );
+				    
 					if(!defined( 'VM_SITE' ))
 					{
 						echo 'failure\n';
@@ -288,8 +294,9 @@ $log->addEntry ( array ('comment' => 'Этап 4.1.2) Неудача: Невоз
 			
 			
 		
-			$log->addEntry ( array ('comment' => 'Этап 4.1.2) Производитель '.$data['manuf'].' создан' ) );
-			$logs_http[] = "<strong>Производители</strong> - Производитель <strong>".$data['manuf']."</strong> создан";
+			//$log->addEntry ( array ('comment' => 'Этап 4.1.2) Производитель '.$data['manuf'].' создан' ) );
+				JLog::add ( 'Этап 4.1.2) Производитель '.$data['manuf'].' создан' , JLog::INFO, 'vmshop_1c' );
+				$logs_http[] = "<strong>Производители</strong> - Производитель <strong>".$data['manuf']."</strong> создан";
 		}
 		
 	}

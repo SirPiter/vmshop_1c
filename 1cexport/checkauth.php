@@ -1,9 +1,8 @@
 <?php
 //***********************************************************************
 // Назначение: Передача товаров из 1С в virtuemart
-//Для Джумлы 2.5, если первая не работает
+// Для Джумлы 2.5, если первая не работает
 // Модуль: checkauth.php - Авторизация на сервере
-
 //***********************************************************************
 
 if ( !defined( 'VM_1CEXPORT' ) )
@@ -36,13 +35,16 @@ if (VM_VERVM == '2')
 }
 elseif(VM_VERVM == '1')
 {
-	$username_esc = $db->getEscaped($username,true);
+	$username_esc = $db->Escape($username,true);
 }
 
 $query = "SELECT `id`, `password` FROM #__users where username='" . $username_esc . "'";
 $db->setQuery( $query );
 $result = $db->loadObject();
-$log->addEntry ( array ('comment' => 'Этап 1) логин: ' .$username_esc) );
+
+//$log->addEntry ( array ('comment' => 'Этап 1) логин: ' .$username_esc) );
+JLog::add ( 'Этап 1) логин: ' .$username_esc, JLog::DEBUG, 'vmshop_1c' );
+
 // Авторизуем
 if( !$result ) {
 	$log->addEntry ( array ('comment' => 'Этап 1) Неверный логин') );
@@ -81,8 +83,10 @@ if( JFactory::getApplication()->login( $credentials, $options )){
 
 	$somecontent = $id_admin."\n".$username;
 	
-	$log->addEntry ( array ('comment' => 'Этап 1) Пользователь: '.$username_esc.' успешно авторизовался.') );	
-	if(!defined( 'VM_SITE' ))
+//	$log->addEntry ( array ('comment' => 'Этап 1) Пользователь: '.$username_esc.' успешно авторизовался.') );	
+	JLog::add ( 'Этап 1) Пользователь: '.$username_esc.' успешно авторизовался.', JLog::DEBUG, 'vmshop_1c' );
+
+    if(!defined( 'VM_SITE' ))
 	{
 		echo 'success';
 	}
@@ -94,10 +98,9 @@ if( JFactory::getApplication()->login( $credentials, $options )){
 }
 else
 {
-	$log->addEntry ( array ('comment' => 'Этап 1) Неверный пароль') );
-
+	//$log->addEntry ( array ('comment' => 'Этап 1) Неверный пароль') );
+    JLog::add ( 'Этап 1) Неверный пароль', JLog::ERROR, 'vmshop_1c' );
 	
-
 	if(!defined( 'VM_SITE' ))
 	{
 		print "failure\n";

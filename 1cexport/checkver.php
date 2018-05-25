@@ -12,10 +12,18 @@ if ( !defined( 'VM_1CEXPORT' ) )
 }
 
 //Проверяем версию магазина
+
+// Пока не проверяем - просто устанавливаем
+
+/*
+
 if (!class_exists( 'vmVersion' ))
 {
 	require (JPATH_BASE . DS . 'administrator' . DS . 'components' . DS . 'com_virtuemart' . DS . 'version.php');
-	$VMVERSION = explode ( " ", $shortversion );
+	//$VMVERSION = explode ( " ", $shortversion )	;
+	
+	
+	$VMVERSION = vmVersion::$RELEASE;
 }
 $version = $VMVERSION[1];
 $version_status = $VMVERSION[2];
@@ -52,4 +60,16 @@ else // <1.1.9
 	define ( 'VM_VERVM', '1' );
 	define ( 'VM_VERVM_S', 'S' );
 }
+
+
+*/
+
+	define ( 'VM_VERVM', '2' );
+	define ( 'VM_VERVM_S', 'F' );
+	define ( 'LANG', '_ru_ru' ); // для россии!!!
+
+	$version = "3.2.14";
+	$version_status = "Release";
+	$sh_version = str_replace(".", "", $version);
+
 ?>

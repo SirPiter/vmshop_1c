@@ -35,7 +35,8 @@ function inserCategory($xml, $parent = 0)
 			$name = ( string )$category->Наименование;
 			$desc = ( string )$category->Комментарий; //Аматор
 			
-			$log->addEntry ( array ('comment' => '--------------------'.$name.'--------------------') );
+		//	$log->addEntry ( array ('comment' => '--------------------'.$name.'--------------------') );
+			JLog::add ( '--------------------'.$name.'--------------------', JLog::INFO, 'vmshop_1c' );
 			$logs_http[] = "<strong>Загрузка товара</strong> - --------------------<strong>".$name."</strong>--------------------";
 			
 			if(VM_VERVM == '2')
@@ -87,10 +88,11 @@ function inserCategory($xml, $parent = 0)
 				
 			}
 			
-			$log->addEntry ( array ('comment' => 'Этап 4.1.2) Проверяем категорию  '.$name) );
+			//$log->addEntry ( array ('comment' => 'Этап 4.1.2) Проверяем категорию  '.$name) );
+			JLog::add ( 'Этап 4.1.2) Проверяем категорию  '.$name, JLog::INFO, 'vmshop_1c' );
 			$logs_http[] = "<strong>Загрузка товара</strong> - Проверяем существование категории: <strong>".$name."</strong>";
 					
-			$sql = "SELECT category_id FROM #__".$dba['category_to_1c_db']." where `c_category_id` = '" . $db->getEscaped($id) . "'";
+			$sql = "SELECT category_id FROM #__".$dba['category_to_1c_db']." where `c_category_id` = '" . $db->Escape($id) . "'";
 			$db->setQuery ( $sql );
 			//$log->addEntry ( array ('comment' => $id) );
 			//$log->addEntry ( array ('comment' => $sql) );
@@ -98,8 +100,9 @@ function inserCategory($xml, $parent = 0)
 							
 			if(isset ( $rows_sub_Count )) 
 			{	
-				$log->addEntry ( array ('comment' => 'Этап 4.1.2) Категория '.$name.' существует, обновляем информацию в базе') );
-				$logs_http[] = "<strong>Загрузка товара</strong> - Категория <strong>".$name."</strong> существует, обновляем информацию в базе";
+				//$log->addEntry ( array ('comment' => 'Этап 4.1.2) Категория '.$name.' существует, обновляем информацию в базе') );
+			    JLog::add ( 'Этап 4.1.2) Категория '.$name.' существует, обновляем информацию в базе', JLog::INFO, 'vmshop_1c' );
+			    $logs_http[] = "<strong>Загрузка товара</strong> - Категория <strong>".$name."</strong> существует, обновляем информацию в базе";
 				
 				$category_id = ( int ) $rows_sub_Count;
 				if(VM_VERVM_S == 'F' and VM_VERVM == '2')
@@ -153,13 +156,15 @@ function inserCategory($xml, $parent = 0)
 					$db->setQuery ( $sql );
 					$db->query ();
 					
-					$log->addEntry ( array ('comment' => 'Этап 4.1.2) Категория '.$name.' обновлена') );
+					//$log->addEntry ( array ('comment' => 'Этап 4.1.2) Категория '.$name.' обновлена') );
+					JLog::add ( 'Этап 4.1.2) Категория '.$name.' обновлена', JLog::INFO, 'vmshop_1c' );
 					$logs_http[] = "<strong>Загрузка товара</strong> - Категория <strong>".$name."</strong> обновлена";
 				}
 				else
 				{
-					$log->addEntry ( array ('comment' => 'Этап 4.1.2) Категория '.$name.' не менялась, обновление не требуется') );
-					$logs_http[] = "<strong>Загрузка товара</strong> - Категория <strong>".$name."</strong> не менялась, обновление не требуется";
+					//$log->addEntry ( array ('comment' => 'Этап 4.1.2) Категория '.$name.' не менялась, обновление не требуется') );
+				    JLog::add ( 'Этап 4.1.2) Категория '.$name.' не менялась, обновление не требуется', JLog::INFO, 'vmshop_1c' );
+				    $logs_http[] = "<strong>Загрузка товара</strong> - Категория <strong>".$name."</strong> не менялась, обновление не требуется";
 				}
 				
 			} 
@@ -217,14 +222,16 @@ function inserCategory($xml, $parent = 0)
 				if (! $db->insertObject ( '#__'.$dba['category_db'], $ins, $dba['pristavka'].'category_id' )) 
 				{
 					$logs_http[] = "<strong>Загрузка товара</strong> - <strong><font color='red'>Неудача:</font></strong> Невозможно создать категорию - <strong>".$name."</strong>";
-					$log->addEntry ( array ('comment' => 'Этап 4.1.2) Неудача: Невозможно создать категорию - '.$name) );
+					//$log->addEntry ( array ('comment' => 'Этап 4.1.2) Неудача: Невозможно создать категорию - '.$name) );
+					JLog::add ( 'Этап 4.1.2) Неудача: Невозможно создать категорию - '.$name, JLog::ERROR, 'vmshop_1c' );
 					print 'error mysql';
 					die();
 				}
 				else
 				{
-					$log->addEntry ( array ('comment' => 'Этап 4.1.2) Создаем категорию  '.$name) );
-					$logs_http[] = "<strong>Загрузка товара</strong> - Создаем категорию: <strong>".$name."</strong>";
+					//$log->addEntry ( array ('comment' => 'Этап 4.1.2) Создаем категорию  '.$name) );
+				    JLog::add ( 'Этап 4.1.2) Создаем категорию  '.$name, JLog::INFO, 'vmshop_1c' );
+				    $logs_http[] = "<strong>Загрузка товара</strong> - Создаем категорию: <strong>".$name."</strong>";
 				}
 				if(VM_VERVM == '1')
 				{	
@@ -250,8 +257,9 @@ function inserCategory($xml, $parent = 0)
 						$ins->metakey = '';
 						if (! $db->insertObject ( '#__'.$dba['category_ln_db'], $ins )) 
 						{
-							$log->addEntry ( array ('comment' => 'Этап 4.1.2) Неудача: Таблица '.$dba['category_ln_db'].' Невозможно вставить запись для категории - '.$name) );
-							$logs_http[] = "<strong>Загрузка товара</strong> - <strong><font color='red'>Неудача:</font></strong> Невозможно вставить запись для категории - <strong>".$name."</strong>";
+							//$log->addEntry ( array ('comment' => 'Этап 4.1.2) Неудача: Таблица '.$dba['category_ln_db'].' Невозможно вставить запись для категории - '.$name) );
+						    JLog::add ( 'Этап 4.1.2) Неудача: Таблица '.$dba['category_ln_db'].' Невозможно вставить запись для категории - '.$name, JLog::ERROR, 'vmshop_1c' );
+						    $logs_http[] = "<strong>Загрузка товара</strong> - <strong><font color='red'>Неудача:</font></strong> Невозможно вставить запись для категории - <strong>".$name."</strong>";
 							print 'error mysql';
 							die();
 						}
@@ -279,20 +287,22 @@ function inserCategory($xml, $parent = 0)
 				}			
 				if (! $db->insertObject ( '#__'.$dba['category_xref_db'], $ins )) 
 				{
-					$log->addEntry ( array ('comment' => 'Этап 4.1.2) Неудача: Невозможно создать дерево категорий') );
-					$logs_http[] = "<strong>Загрузка товара</strong> - <strong><font color='red'>Неудача:</font></strong> Невозможно создать дерево категорий";
+					//$log->addEntry ( array ('comment' => 'Этап 4.1.2) Неудача: Невозможно создать дерево категорий') );
+				    JLog::add ( 'Этап 4.1.2) Неудача: Невозможно создать дерево категорий', JLog::ERROR, 'vmshop_1c' );
+				    $logs_http[] = "<strong>Загрузка товара</strong> - <strong><font color='red'>Неудача:</font></strong> Невозможно создать дерево категорий";
 					print 'error mysql';
 					die();
 				}
 				
 				$ins = new stdClass ();
 				$ins->category_id = ( int ) $category_id;
-				$ins->c_category_id = $db->getEscaped($id);
+				$ins->c_category_id = $db->Escape($id);
 				
 				if (! $db->insertObject ( '#__'.$dba['category_to_1c_db'], $ins )) 
 				{
-					$log->addEntry ( array ('comment' => 'Этап 4.1.2) Неудача: Невозможно применить категории 1С и VMSHOP') );
-					$logs_http[] = "<strong>Загрузка товара</strong> - <strong><font color='red'>Неудача:</font></strong> Невозможно применить категории 1С и VMSHOP";
+					//$log->addEntry ( array ('comment' => 'Этап 4.1.2) Неудача: Невозможно применить категории 1С и VMSHOP') );
+				    JLog::add ( 'Этап 4.1.2) Неудача: Невозможно применить категории 1С и VMSHOP', JLog::ERROR, 'vmshop_1c' );
+				    $logs_http[] = "<strong>Загрузка товара</strong> - <strong><font color='red'>Неудача:</font></strong> Невозможно применить категории 1С и VMSHOP";
 					print 'error mysql';
 					die();
 				}
@@ -301,7 +311,8 @@ function inserCategory($xml, $parent = 0)
 			
 			$CAT[$id] = $category_id;
 				
-			$log->addEntry ( array ('comment' => ' 4.1.2) Категория и все ее подкатегории созданы') );
+			//$log->addEntry ( array ('comment' => ' 4.1.2) Категория и все ее подкатегории созданы') );
+			JLog::add ( ' 4.1.2) Категория и все ее подкатегории созданы', JLog::INFO, 'vmshop_1c' );
 			$logs_http[] = "<strong>Загрузка товара</strong> - Категория и все ее подкатегории созданы";
 		}
 			

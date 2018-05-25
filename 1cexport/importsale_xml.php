@@ -26,7 +26,8 @@ $base->open($importFile);
 
 if(!$reader and !$base)
 {
-	$log->addEntry ( array ('comment' => 'Этап 5.1.1) Неудача: Ошибка открытия XML') );	
+	//$log->addEntry ( array ('comment' => 'Этап 5.1.1) Неудача: Ошибка открытия XML') );
+    JLog::add ( 'Этап 5.1.1) Неудача: Ошибка открытия XML', JLog::ERROR, 'vmshop_1c' );
 	$logs_http[] = "<strong><font color='red'>Неудача:</font></strong> Ошибка открытия XML";
 	
 	if(!defined( 'VM_SITE' ))
@@ -37,8 +38,9 @@ if(!$reader and !$base)
 }
 else
 {
-	$log->addEntry ( array ('comment' => 'Этап 5.1.1) XML '.$_REQUEST['filename'].' загружен') );
-	$logs_http[] = "<strong>Загрузка заказов</strong> - XML <strong>importsale.xml</strong> загружен";
+	//$log->addEntry ( array ('comment' => 'Этап 5.1.1) XML '.$_REQUEST['filename'].' загружен') );
+    JLog::add ( 'Этап 5.1.1) XML '.$_REQUEST['filename'].' загружен', JLog::INFO, 'vmshop_1c' );
+    $logs_http[] = "<strong>Загрузка заказов</strong> - XML <strong>importsale.xml</strong> загружен";
 }
 
 $data = array();
@@ -76,7 +78,8 @@ if(!defined( 'VM_SITE' ))
 	echo "success\n";
 }
 
-$log->addEntry ( array ('comment' => 'Этап 5.1.5) Все заказы обновленны') );
+//$log->addEntry ( array ('comment' => 'Этап 5.1.5) Все заказы обновленны') );
+JLog::add ( 'Этап 5.1.5) Все заказы обновленны', JLog::INFO, 'vmshop_1c' );
 $logs_http[] = "<strong>Загрузка заказов</strong> - Все заказы обновленны";
 $reader->close();
 
@@ -112,19 +115,31 @@ function UpdateSale($xml_pr)
 					
 					//$product->next();
 					break;
+									
+				
+					
 				case 'Номер':
 					$data['number'] = (string)$product->readString();	
-					$log->addEntry ( array ('comment' => 'Этап 5.1.2) Обработка заказа номер: '.$data['number']) );					
-					//$product->next();
+//$log->addEntry ( array ('comment' => 'Этап 5.1.2) Обработка заказа номер: '.$data['number']) );					
+JLog::add ( 'Этап 5.1.2) Обработка заказа номер: '.$data['number'], JLog::INFO, 'vmshop_1c' );
+//$product->next();
 					break;
+					
 				case 'Товар':
-					$xml = simplexml_load_string($product->readOuterXML());
-					$log->addEntry ( array ('comment' => 'Этап 5.1.2) Наименование:  '.$xml->Наименование) );		
-					$log->addEntry ( array ('comment' => 'Этап 5.1.2) Сумма:  '.$xml->Сумма) );					
-				if ($xml->Наименование == "Скидка")
+				
+$xml = simplexml_load_string($product->readOuterXML());
+	
+//$log->addEntry ( array ('comment' => 'Этап 5.1.2) Наименование:  '.$xml->Наименование) );		
+JLog::add ( 'Этап 5.1.2) Наименование:  '.$xml->Наименование, JLog::INFO, 'vmshop_1c' );
+//$log->addEntry ( array ('comment' => 'Этап 5.1.2) Сумма:  '.$xml->Сумма) );					
+JLog::add ( 'Этап 5.1.2) Сумма:  '.$xml->Сумма, JLog::INFO, 'vmshop_1c' );
+                    if ($xml->Наименование == "Скидка")
 					{     
 					$data['order_payment'] = (double)$xml->Сумма;
 					}
+											
+				
+
 					unset($xml);
 					$product->next();
 					break;
@@ -157,18 +172,21 @@ $db->setQuery ( "SELECT * FROM `#__".DBBASE."_orders` WHERE `order_number` = '" 
 	//$db->setQuery ( $sql );
 		$rows_sub_Count = $db->loadObject();
 	
+	
 	if (! empty ( $rows_sub_Count ))
 	{
-		$log->addEntry ( array ('comment' => 'Этап 5.2.1) Заказ с номером '.$data['number'].' найден в базе, его id: '.$rows_sub_Count->virtuemart_order_id ) );
-	
+		//$log->addEntry ( array ('comment' => 'Этап 5.2.1) Заказ с номером '.$data['number'].' найден в базе, его id: '.$rows_sub_Count->virtuemart_order_id ) );
+	    JLog::add ( 'Этап 5.2.1) Заказ с номером '.$data['number'].' найден в базе, его id: '.$rows_sub_Count->virtuemart_order_id, JLog::INFO, 'vmshop_1c' );
+		
 	$sale_id = (int) $rows_sub_Count->virtuemart_order_id;
 	$order_total = (double)$rows_sub_Count->order_subtotal + $data['order_payment'];
 
 	$db->setQuery ( "UPDATE  `#__".DBBASE."_orders` SET order_payment = ".$data['order_payment'] .", order_total = ".$order_total." WHERE `order_number` = '" .$data['number']."'");
 if (!$db->query ())
 						{
-							$log->addEntry ( array ('comment' => 'Этап 5.2.3) Неудача: Невозможно обновить заказ - ' . $sale_id ) );
-							
+							//$log->addEntry ( array ('comment' => 'Этап 5.2.3) Неудача: Невозможно обновить заказ - ' . $sale_id ) );
+						    JLog::add ( 'Этап 5.2.3) Неудача: Невозможно обновить заказ - ' . $sale_id , JLog::ERROR, 'vmshop_1c' );
+						    
 							if(!defined( 'VM_SITE' ))
 							{
 								echo 'failure\n';
@@ -177,11 +195,18 @@ if (!$db->query ())
 
 							die;
 						}
-$log->addEntry ( array ('comment' => 'Этап 5.2.2) Заказу с номером '.$data['number'].' установлена скидка: '.$data['order_payment'] ) );
+//$log->addEntry ( array ('comment' => 'Этап 5.2.2) Заказу с номером '.$data['number'].' установлена скидка: '.$data['order_payment'] ) );
+						JLog::add ( 'Этап 5.2.2) Заказу с номером '.$data['number'].' установлена скидка: '.$data['order_payment'] , JLog::ERROR, 'vmshop_1c' );
+						
+	
 	
 	}
 	
 	//
+
+
 }
+
+
 
 ?>

@@ -55,8 +55,9 @@ global $log, $db, $dba, $id_admin, $username, $lang_1c;
 					
 		if (! $db->insertObject ( '#__'.$dba['customs_db'], $ins, 'virtuemart_custom_id' )) 
 		{
-			$log->addEntry ( array ('comment' => 'Этап 4.1.3) Неудача: Невозможно вставить запись в таблицу - '.$dba['customs_db'] ) );
-			if(!defined( 'VM_SITE' ))
+			//$log->addEntry ( array ('comment' => 'Этап 4.1.3) Неудача: Невозможно вставить запись в таблицу - '.$dba['customs_db'] ) );
+		    JLog::add ( 'Этап 4.1.3) Неудача: Невозможно вставить запись в таблицу - '.$dba['customs_db'], JLog::ERROR, 'vmshop_1c' );
+		    if(!defined( 'VM_SITE' ))
 			{
 				echo 'failure\n';
 				echo 'error mysql\n';
@@ -92,7 +93,9 @@ function makecustoms($data='',$produkt_id='0',$cvid,$cvzn)
 		$ins->virtuemart_product_id = ( int )$produkt_id;
 		
 		$sql = "SELECT * FROM #__".$dba['customs_db']." where `custom_params` = '" .$cvid. "'";
-		$log->addEntry ( array ('comment' => 'Запрос: '.$sql));
+		//$log->addEntry ( array ('comment' => 'Запрос: '.$sql));
+		JLog::add ( 'Запрос: '.$sql, JLog::INFO, 'vmshop_1c' );
+		
 					$db->setQuery ( $sql );
 							$rows = $db->loadObject ();
 					
@@ -113,7 +116,9 @@ function makecustoms($data='',$produkt_id='0',$cvid,$cvzn)
 		
 		if (! $db->insertObject ( '#__'.$dba['customfields_db'], $ins )) 
 		{
-			$log->addEntry ( array ('comment' => 'Неудача: Невозможно вставить запись в таблицу - '.$dba['customfields_db'] ) );
+			//$log->addEntry ( array ('comment' => 'Неудача: Невозможно вставить запись в таблицу - '.$dba['customfields_db'] ) );
+		    JLog::add ( 'Неудача: Невозможно вставить запись в таблицу - '.$dba['customfields_db'], JLog::ERROR, 'vmshop_1c' );
+		    
 			if(!defined( 'VM_SITE' ))
 			{
 				echo 'failure\n';
@@ -128,15 +133,18 @@ function makecustoms($data='',$produkt_id='0',$cvid,$cvzn)
 		else
 		{
 			$logs_http[] = "<strong>Загрузка товара</strong> - Для продукта - <strong>".$data['name']."</strong> создано дополнительное поле <strong>".$rows->virtuemart_custom_id."</strong> со значением <strong>".$cvzn."</strong>";
-			$log->addEntry ( array ('comment' => 'Для продукта '.$data['name'].' создано дополнительное поле '.$rows->custom_title.' со значением '.$cvzn ) );
+			//$log->addEntry ( array ('comment' => 'Для продукта '.$data['name'].' создано дополнительное поле '.$rows->custom_title.' со значением '.$cvzn ) );
+			JLog::add ( 'Для продукта '.$data['name'].' создано дополнительное поле '.$rows->custom_title.' со значением '.$cvzn, JLog::INFO, 'vmshop_1c' );
+			
 		}
 	}
 	
 	
 	else 
 	{
-$log->addEntry ( array ('comment' => 'Аматор Неудача: Не найдена запись в таблице доп. полей с идентификатором '.$cvid ) );
-
+//$log->addEntry ( array ('comment' => 'Аматор Неудача: Не найдена запись в таблице доп. полей с идентификатором '.$cvid ) );
+	    JLog::add ( 'Аматор Неудача: Не найдена запись в таблице доп. полей с идентификатором '.$cvid , JLog::ERROR, 'vmshop_1c' );
+	    
 
 	}
 	return true;

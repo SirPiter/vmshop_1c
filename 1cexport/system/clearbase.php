@@ -25,7 +25,8 @@ function clearBase($clear,$id = '1')
 	// Если в настройках модуля стоит флаг обнулить БД 
 	if(VM_DB == 'yes' AND $clear == 'false' AND $id == '1') 
 	{
-		$log->addEntry ( array ('comment' => 'Этап 4.1.1) Начинаем отчистку таблиц') );
+		//$log->addEntry ( array ('comment' => 'Этап 4.1.1) Начинаем отчистку таблиц') );
+	    JLog::add ( 'Этап 4.1.1) Начинаем отчистку таблиц', JLog::INFO, 'vmshop_1c' );
 		$logs_http[] = "<strong>Загрузка товара</strong> - Начинаем отчистку таблиц";
 		// Очищает таблицы от всех товаров
 		
@@ -71,22 +72,29 @@ function clearBase($clear,$id = '1')
 			if ($db->query ())
 			{
 				$logs_http[] = "<strong>Загрузка товара</strong> - Выполнен запрос № ".$key.": (<strong>".$sql."</strong>)";
-				$log->addEntry ( array ('comment' => 'Этап 4.1.1) Выполнен запрос № '.$key.': ('.$sql.')') );
+				//$log->addEntry ( array ('comment' => 'Этап 4.1.1) Выполнен запрос № '.$key.': ('.$sql.')') );
+				JLog::add ( 'Этап 4.1.1) Выполнен запрос № '.$key.': ('.$sql.')', JLog::INFO, 'vmshop_1c' );
+				
 			}
 			else
 			{
 				$logs_http[] = "<strong>Загрузка товара</strong> - <strong><font color='red'>Неудача:</font></strong> Ошибка запроса № ".$key.": (<strong>".$sql."</strong>)";
-				$log->addEntry ( array ('comment' => 'Этап 4.1.1) Неудача: Ошибка запроса № '.$key.': ('.$sql.')') );
+				//$log->addEntry ( array ('comment' => 'Этап 4.1.1) Неудача: Ошибка запроса № '.$key.': ('.$sql.')') );
+				JLog::add ( 'Этап 4.1.1) Неудача: Ошибка запроса № '.$key.': ('.$sql.')', JLog::ERROR, 'vmshop_1c' );
+				
 			}
 		}
 		
-		$log->addEntry ( array ('comment' => 'Этап 4.1.1) Закончили отчистку таблиц') );
+		//$log->addEntry ( array ('comment' => 'Этап 4.1.1) Закончили отчистку таблиц') );
+		JLog::add ( 'Этап 4.1.1) Закончили отчистку таблиц', JLog::INFO, 'vmshop_1c' );
 		$logs_http[] = "<strong>Загрузка товара</strong> - Закончили отчистку таблиц";
 	}
 	elseif(VM_DB == 'yes' AND $clear == 'false' AND $id == '2') 
 	{
-		$log->addEntry ( array ('comment' => 'Этап 4.2.1) Начинаем отчистку таблиц') );
-		$logs_http[] = "<strong>Загрузка цен</strong> - Начинаем отчистку таблиц";
+		//$log->addEntry ( array ('comment' => 'Этап 4.2.1) Начинаем отчистку таблиц') );
+	    JLog::add ( 'Этап 4.2.1) Начинаем отчистку таблиц', JLog::INFO, 'vmshop_1c' );
+	    
+	    $logs_http[] = "<strong>Загрузка цен</strong> - Начинаем отчистку таблиц";
 		// Очищает таблицы от всех товаров
 		
 		$table_trun[] = $dba['product_price_db'];
@@ -108,16 +116,21 @@ function clearBase($clear,$id = '1')
 			if ($db->query ())
 			{
 				$logs_http[] = "<strong>Загрузка цен</strong> - Выполнен запрос № ".$key.": (<strong>".$sql."</strong>)";
-				$log->addEntry ( array ('comment' => 'Этап 4.2.1) Выполнен запрос № '.$key.': ('.$sql.')') );
+				//$log->addEntry ( array ('comment' => 'Этап 4.2.1) Выполнен запрос № '.$key.': ('.$sql.')') );
+				JLog::add ( 'Этап 4.2.1) Выполнен запрос № '.$key.': ('.$sql.')', JLog::INFO, 'vmshop_1c' );
+				
 			}
 			else
 			{
 				$logs_http[] = "<strong>Загрузка цен</strong> - <strong><font color='red'>Неудача:</font></strong> Ошибка запроса № ".$key.": (<strong>".$sql."</strong>)";
-				$log->addEntry ( array ('comment' => 'Этап 4.2.1) Неудача: Ошибка запроса № '.$key.': ('.$sql.')') );
+				//$log->addEntry ( array ('comment' => 'Этап 4.2.1) Неудача: Ошибка запроса № '.$key.': ('.$sql.')') );
+				JLog::add ( 'Этап 4.2.1) Неудача: Ошибка запроса № '.$key.': ('.$sql.')', JLog::ERROR, 'vmshop_1c' );
+				
 			}
 		}
 		
-		$log->addEntry ( array ('comment' => 'Этап 4.2.1) Закончили отчистку таблиц') );
+		//$log->addEntry ( array ('comment' => 'Этап 4.2.1) Закончили отчистку таблиц') );
+		JLog::add ( 'Этап 4.2.1) Закончили отчистку таблиц', JLog::INFO, 'vmshop_1c' );
 		$logs_http[] = "<strong>Загрузка цен</strong> - Закончили отчистку таблиц";
 	}
 

@@ -12,14 +12,16 @@ if ( !defined( 'VM_1CEXPORT' ) )
 }
 
 $logs_http[] = "<strong>Загрузка цен</strong> - Проверка базы данных совместимости 1с и VMSHOP";
-$log->addEntry ( array ('comment' => 'Этап 4.2.1) Проверка базы данных совместимости 1с и VMSHOP') );
+//$log->addEntry ( array ('comment' => 'Этап 4.2.1) Проверка базы данных совместимости 1с и VMSHOP') );
+JLog::add ( 'Этап 4.2.1) Проверка базы данных совместимости 1с и VMSHOP', JLog::INFO, 'vmshop_1c' );
 
 $res4 = $db->setQuery ( 'SHOW COLUMNS FROM #__'.$dba['cashgroup_to_1c_db'] );
 
 if( !$db->query($res4)) 
 {
-	$log->addEntry ( array ('comment' => 'Этап 4.2.1) База cashgroup_to_1c не существует. SQL: '.'SHOW COLUMNS FROM "#__'.$dba['cashgroup_to_1c_db'].'"' ) );			
-	$db->setQuery ( 
+	//$log->addEntry ( array ('comment' => 'Этап 4.2.1) База cashgroup_to_1c не существует. SQL: '.'SHOW COLUMNS FROM "#__'.$dba['cashgroup_to_1c_db'].'"' ) );			
+    JLog::add ( 'Этап 4.2.1) База cashgroup_to_1c не существует. SQL: '.'SHOW COLUMNS FROM "#__'.$dba['cashgroup_to_1c_db'].'"' , JLog::INFO, 'vmshop_1c' );
+    $db->setQuery ( 
 			'CREATE TABLE 
 			`#__'.$dba['cashgroup_to_1c_db'].'` ( 
 			`cashgroup_id` int(10) unsigned NOT NULL,
@@ -31,15 +33,21 @@ if( !$db->query($res4))
 	$db->query ();
 	
 	$logs_http[] = "<strong>Загрузка цен</strong> - База cashgroup_to_1c создана";
-	$log->addEntry ( array ('comment' => 'Этап 4.2.1) База cashgroup_to_1c создана') );			
+	//$log->addEntry ( array ('comment' => 'Этап 4.2.1) База cashgroup_to_1c создана') );
+	JLog::add ( 'Этап 4.2.1) База cashgroup_to_1c создана' , JLog::INFO, 'vmshop_1c' );
+	
 }
 else
 {
 	$logs_http[] = "<strong>Загрузка цен</strong> - База cashgroup_to_1c существует";
-	$log->addEntry ( array ('comment' => 'Этап 4.1.1) База cashgroup_to_1c существует') );	
+	//$log->addEntry ( array ('comment' => 'Этап 4.1.1) База cashgroup_to_1c существует') );
+	JLog::add ( 'Этап 4.1.1) База cashgroup_to_1c существует' , JLog::INFO, 'vmshop_1c' );
+	
 }
 $logs_http[] = "<strong>Загрузка цен</strong> - Добавление цен к товарам";
-$log->addEntry ( array ('comment' => 'Этап 4.2.1) Добавление цен к товарам') );
+//$log->addEntry ( array ('comment' => 'Этап 4.2.1) Добавление цен к товарам') );
+JLog::add ( 'Этап 4.2.1) Добавление цен к товарам' , JLog::INFO, 'vmshop_1c' );
+
 
 $offersFile = JPATH_BASE_PICTURE. DS . 'offers.xml';
 
@@ -56,8 +64,9 @@ $base->open($offersFile);
 
 if(!$reader and !$base)
 {
-	$log->addEntry ( array ('comment' => 'Этап 4.2.1) Неудача: Ошибка открытия XML') );	
-	$logs_http[] = "<strong>Загрузка цен</strong> - <strong><font color='red'>Неудача:</font></strong> Ошибка открытия XML";
+	//$log->addEntry ( array ('comment' => 'Этап 4.2.1) Неудача: Ошибка открытия XML') );	
+    JLog::add ( 'Этап 4.2.1) Неудача: Ошибка открытия XML' , JLog::ERROR, 'vmshop_1c' );
+    $logs_http[] = "<strong>Загрузка цен</strong> - <strong><font color='red'>Неудача:</font></strong> Ошибка открытия XML";
 	if(!defined( 'VM_SITE' ))
 	{
 		echo 'failure\n';
@@ -66,11 +75,13 @@ if(!$reader and !$base)
 }
 else
 {
-	$log->addEntry ( array ('comment' => 'Этап 4.2.1) XML offers.xml загружен') );
-	$logs_http[] = "<strong>Загрузка цен</strong> - XML <strong>offers.xml</strong> загружен";
+	//$log->addEntry ( array ('comment' => 'Этап 4.2.1) XML offers.xml загружен') );
+    JLog::add ( 'Этап 4.2.1) XML offers.xml загружен' , JLog::INFO, 'vmshop_1c' );
+    $logs_http[] = "<strong>Загрузка цен</strong> - XML <strong>offers.xml</strong> загружен";
 }
 
-$log->addEntry ( array ('comment' => 'Этап 4.2.1) Базы созданы, переходим к процесу отчистки') );
+//$log->addEntry ( array ('comment' => 'Этап 4.2.1) Базы созданы, переходим к процесу отчистки') );
+JLog::add ( 'Этап 4.2.1) Базы созданы, переходим к процесу отчистки' , JLog::INFO, 'vmshop_1c' );
 
 $logs_http[] = "<strong>Загрузка цен</strong> - Все базы созданы, переходим к процесу отчистки";
 
@@ -95,7 +106,8 @@ while($base->read())
 					define ( 'VM_XML_VERS', '203' );
 				}
 				
-				$log->addEntry ( array ('comment' => 'Этап 4.2.1) Версия схемы XML '.$vers_xml. ' VM_XML_VERS = '.VM_XML_VERS) );
+				//$log->addEntry ( array ('comment' => 'Этап 4.2.1) Версия схемы XML '.$vers_xml. ' VM_XML_VERS = '.VM_XML_VERS) );
+				JLog::add ( 'Этап 4.2.1) Версия схемы XML '.$vers_xml. ' VM_XML_VERS = '.VM_XML_VERS , JLog::INFO, 'vmshop_1c' );
 				$logs_http[] = '<strong>Загрузка цен</strong> - Версия схемы XML '.$vers_xml. ' VM_XML_VERS = '.VM_XML_VERS;
 				//$base->next();
 				break;
@@ -114,8 +126,9 @@ $base->close();
 
 if ($modif == 'false')
 {
-	$log->addEntry ( array ('comment' => 'Этап 4.2.2) Базы отчищены, переходим к процесу создания категорий') );
-
+	//$log->addEntry ( array ('comment' => 'Этап 4.2.2) Базы отчищены, переходим к процесу создания категорий') );
+    JLog::add ( 'Этап 4.2.2) Базы отчищены, переходим к процесу создания категорий' , JLog::INFO, 'vmshop_1c' );
+    
 	$logs_http[] = "<strong>Загрузка цен</strong> - Все базы созданы, переходим к процесу создания категорий";
 }
 
@@ -144,7 +157,8 @@ while($reader->read())
 
 
 
-$log->addEntry ( array ('comment' => 'Этап 4.2.4) Все цены добавленны (обновленны)') );
+//$log->addEntry ( array ('comment' => 'Этап 4.2.4) Все цены добавленны (обновленны)') );
+JLog::add ( 'Этап 4.2.4) Все цены добавленны (обновленны)' , JLog::INFO, 'vmshop_1c' );
 $logs_http[] = "<strong>Загрузка цен</strong> - ---------------- Все цены добавленны (обновленны) ----------------";
 $reader->close();
 

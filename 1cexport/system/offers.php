@@ -79,7 +79,7 @@ function inserOffers($xml_of)
 								case 'ИдТипаЦены':
 									$data['id_cashgr'] = (string)$offer_xml->readString();
 									
-									$sql = "SELECT cashgroup_id  FROM #__".$dba['cashgroup_to_1c_db']." where `c_id` = '" . $db->getEscaped($data['id_cashgr']) . "'";
+									$sql = "SELECT cashgroup_id  FROM #__".$dba['cashgroup_to_1c_db']." where `c_id` = '" . $db->Escape($data['id_cashgr']) . "'";
 									$db->setQuery ( $sql );
 									$rows_sub_Count = $db->loadResult ();
 									if (isset ( $rows_sub_Count ))
@@ -89,8 +89,10 @@ function inserOffers($xml_of)
 									}
 									else
 									{
-										$log->addEntry ( array ('comment' => 'Этап 4.2.3) Неудача: Ошибка запроса, нет id группы цен ' ) );
-										if(!defined( 'VM_SITE' ))
+										//$log->addEntry ( array ('comment' => 'Этап 4.2.3) Неудача: Ошибка запроса, нет id группы цен ' ) );
+									    JLog::add ( 'Этап 4.2.3) Неудача: Ошибка запроса, нет id группы цен ' , JLog::ERROR, 'vmshop_1c' );
+									    JLog::add ( 'Этап 4.2.3) Неудача: '.$sql , JLog::ERROR, 'vmshop_1c' );
+									    if(!defined( 'VM_SITE' ))
 										{
 											echo 'failure\n';
 											echo 'error mysql';
@@ -193,8 +195,9 @@ function createOffers($data='',$custom_id='0',$offers='',$harakt='')
 	
 	if (!isset($offers['id']) or $offers['id'] == '')
 	{
-		$log->addEntry ( array ('comment' => 'Этап 4.2.3) Неудача: Ошибка запроса, нет id товара из 1С' ) );
-		if(!defined( 'VM_SITE' ))
+		//$log->addEntry ( array ('comment' => 'Этап 4.2.3) Неудача: Ошибка запроса, нет id товара из 1С' ) );
+	    JLog::add ( 'Этап 4.2.3) Неудача: Ошибка запроса, нет id товара из 1С' , JLog::ERROR, 'vmshop_1c' );
+	    if(!defined( 'VM_SITE' ))
 		{
 			echo 'failure\n';
 			echo 'error mysql';
@@ -208,21 +211,22 @@ function createOffers($data='',$custom_id='0',$offers='',$harakt='')
 	
 	/*if ($offers['har'] == '')
 	{*/
-		$sql = "SELECT product_id FROM #__".$dba['product_to_1c_db']." where `c_id` = '" . $db->getEscaped($offers['id']) . "'";
+		$sql = "SELECT product_id FROM #__".$dba['product_to_1c_db']." where `c_id` = '" . $db->Escape($offers['id']) . "'";
 		$db->setQuery ( $sql );
 		$rows_sub_Count = $db->loadResult ();
 	/*}
 	else
 	{
-		$sql = "SELECT product_id FROM #__".$dba['product_to_1c_db']." where `c_id` = '" . $db->getEscaped($offers['id']) . "_har_" . $db->getEscaped($offers['har']) . "'";
+		$sql = "SELECT product_id FROM #__".$dba['product_to_1c_db']." where `c_id` = '" . $db->Escape($offers['id']) . "_har_" . $db->Escape($offers['har']) . "'";
 		$db->setQuery ( $sql );
 		$rows_sub_Count = $db->loadResult ();
 	}*/
 	
 	if(!isset ( $rows_sub_Count )) 
 	{
-		$log->addEntry ( array ('comment' => 'Этап 4.2.3) Товар '.$data['name'].' с пометкой Удален, его цены не загружаются!' ) );
-		$logs_http[] = "<strong>Загрузка цен</strong> - Товар ".$data['name']." с пометкой Удален, его цены не загружаются!";
+		//$log->addEntry ( array ('comment' => 'Этап 4.2.3) Товар '.$data['name'].' с пометкой Удален, его цены не загружаются!' ) );
+	    JLog::add ( 'Этап 4.2.3) Товар '.$data['name'].' с пометкой Удален, его цены не загружаются!' , JLog::INFO, 'vmshop_1c' );
+	    $logs_http[] = "<strong>Загрузка цен</strong> - Товар ".$data['name']." с пометкой Удален, его цены не загружаются!";
 		return;		
 	}
 	
@@ -298,7 +302,10 @@ function createOffers($data='',$custom_id='0',$offers='',$harakt='')
 					$price = $price * 100 / ($tax_rate * 100 + 100);
 				}
 			}
-			$sql = "SELECT ".$dba['pristavka']."product_price_id FROM #__".$dba['product_price_db']." where `".$dba['pristavka']."shopper_group_id` = '" . $cash_gr . "' AND `".$dba['pristavka']."product_id` = '" . $product_id . "'";
+			
+//SirPiter			$sql = "SELECT ".$dba['pristavka']."product_price_id FROM #__".$dba['product_price_db']." where `".$dba['pristavka']."shopper_group_id` = '" . $cash_gr . "' AND `".$dba['pristavka']."product_id` = '" . $product_id . "'";
+			$sql = "SELECT ".$dba['pristavka']."product_price_id FROM #__".$dba['product_price_db']." where `".$dba['shopper_group_id_t']."` = '" . $cash_gr . "' AND `".$dba['pristavka']."product_id` = '" . $product_id . "'";
+			
 			$db->setQuery ( $sql );
 			$rows_sub_Count = $db->loadResult ();
 			
@@ -358,8 +365,9 @@ function createOffers($data='',$custom_id='0',$offers='',$harakt='')
 						$db->setQuery ( $sql );
 						if (!$db->query ())
 						{
-							$log->addEntry ( array ('comment' => 'Этап 4.2.3) Неудача: Невозможно обновить прайс id - ' . $rows_sub_Count ) );
-							$log->addEntry ( array ('comment' => 'Этап 4.2.3) ' . $sql ) );
+							//$log->addEntry ( array ('comment' => 'Этап 4.2.3) Неудача: Невозможно обновить прайс id - ' . $rows_sub_Count ) );
+						    JLog::add ( 'Этап 4.2.3) Неудача: Невозможно обновить прайс id - ' . $rows_sub_Count  , JLog::ERROR, 'vmshop_1c' );
+						    $log->addEntry ( array ('comment' => 'Этап 4.2.3) ' . $sql ) );
 							if(!defined( 'VM_SITE' ))
 							{
 								echo 'failure\n';
@@ -373,7 +381,8 @@ function createOffers($data='',$custom_id='0',$offers='',$harakt='')
 							die;
 						}
 						
-						$log->addEntry ( array ('comment' => 'Этап 4.2.3) Прайс id='.$rows_sub_Count.' товара '.$data['name'].' обновлен!' ) );
+						//$log->addEntry ( array ('comment' => 'Этап 4.2.3) Прайс id='.$rows_sub_Count.' товара '.$data['name'].' обновлен!' ) );
+						JLog::add ( 'Этап 4.2.3) Прайс id='.$rows_sub_Count.' товара '.$data['name'].' обновлен!' , JLog::INFO, 'vmshop_1c' );
 						$logs_http[] = "<strong>Загрузка цен</strong> - Прайс id=<strong>".$rows_sub_Count."</strong>  товара <strong>".$data['name']."</strong> обновлен!";
 						
 					}
@@ -432,8 +441,9 @@ function createOffers($data='',$custom_id='0',$offers='',$harakt='')
 
 				if (! $db->insertObject ( '#__'.$dba['product_price_db'], $ins )) 
 				{
-					$log->addEntry ( array ('comment' => 'Этап 4.2.3) Неудача: Невозможно вставить запись в таблицу - '.$dba['product_price_db'] ) );
-					if(!defined( 'VM_SITE' ))
+					//$log->addEntry ( array ('comment' => 'Этап 4.2.3) Неудача: Невозможно вставить запись в таблицу - '.$dba['product_price_db'] ) );
+				    JLog::add ( 'Этап 4.2.3) Неудача: Невозможно вставить запись в таблицу - '.$dba['product_price_db'] , JLog::ERROR, 'vmshop_1c' );
+				    if(!defined( 'VM_SITE' ))
 					{
 						echo 'failure\n';
 						echo 'error mysql\n';
@@ -503,9 +513,11 @@ function createOffers($data='',$custom_id='0',$offers='',$harakt='')
 		$db->setQuery ( $sql );
 		if (!$db->query ())
 		{
-			$log->addEntry ( array ('comment' => 'Этап 4.2.3) Неудача: Невозможно обновить продукт id - ' . $rows_sub_Count ) );
-			$log->addEntry ( array ('comment' => 'Этап 4.2.3) ' . $sql ) );
-			if(!defined( 'VM_SITE' ))
+			//$log->addEntry ( array ('comment' => 'Этап 4.2.3) Неудача: Невозможно обновить продукт id - ' . $rows_sub_Count ) );
+		    JLog::add ( 'Этап 4.2.3) Неудача: Невозможно обновить продукт id - ' . $rows_sub_Count  , JLog::ERROR, 'vmshop_1c' );
+		    //$log->addEntry ( array ('comment' => 'Этап 4.2.3) ' . $sql ) );
+		    JLog::add ( 'Этап 4.2.3) ' . $sql , JLog::ERROR, 'vmshop_1c' );
+		    if(!defined( 'VM_SITE' ))
 			{
 				echo 'failure\n';
 				echo 'error mysql update\n';
@@ -519,7 +531,9 @@ function createOffers($data='',$custom_id='0',$offers='',$harakt='')
 		}
 		else  // Sirpiter выводим сообщение в лог об обновлении товара
 		{
-			$log->addEntry ( array ('comment' => 'Этап 4.2.3) ТОвар обновлен. id - ' . $product_id.', '.$data["name"].', Количество: '.$data['quantity'].', Цена:'.$price));
+			//$log->addEntry ( array ('comment' => 'Этап 4.2.3) ТОвар обновлен. id - ' . $product_id.', '.$data["name"].', Количество: '.$data['quantity'].', Цена:'.$price));
+		    JLog::add ( 'Этап 4.2.3) ТОвар обновлен. id - ' . $product_id.', '.$data["name"].', Количество: '.$data['quantity'].', Цена:'.$price , JLog::INFO, 'vmshop_1c' );
+		    
 		}	
 		/* Аматор, у нас товар должен быть виден для всех
 		if (VM_VERVM == '2')
