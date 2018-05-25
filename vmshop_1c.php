@@ -1,13 +1,11 @@
 <?php
 //***********************************************************************
 // Назначение: Передача товаров из 1С в virtuemart
-// Модуль: vmshop_1c.php - Основной модуль
-
+// Модуль: vmshop_1c.php - Основной модуль 
 //			    Amator  (email: amatoravg@gmail.com)
-
 //***********************************************************************
 //Системные параметры
-define ( 'VM_VERSION', '2.1.4.Amator' ); 	// Версия скрипта. Будет обновляться!
+define ( 'VM_VERSION', '3.0.1.Amator.SirPiter' ); 	// Версия скрипта. Будет обновляться!
 
 define ( 'VM_HTTP_VERS', 1 ); 	// Использовать модуль http (через браузер) 1- да, 0- нет (в случае 0 - настройте config.php)
 								// Можно сначало включить, настроить, а потом выключить!
@@ -59,34 +57,53 @@ define ( 'VM_USER_SHOP', $config['VM_USER_SHOP'] );	// Создать поля �
 define ( 'VM_CLIENT', $config['VM_CLIENT'] ); 		// 0 - Выгружать всех клиентов в 1С на контрагента "Физ лицо"  1- Выгружать всех клиентов в 1С как есть
 define ( 'VM_NDS_SHIP', $config['VM_NDS_SHIP'] );		// Ставка НДС для услуги доставки
 
+define ( 'VM_PUBLISH_NEW_PRODUCT', $config['VM_PUBLISH_NEW_PRODUCT'] );		// SirPiter : публикация нового товара
+define ( 'VM_PUBLISH_NEW_CATEGORY', $config['VM_PUBLISH_NEW_CATEGORY'] );		// SirPiter : публикация новой категории
+
+
 require_once (JPATH_BASE . DS . 'includes' . DS . 'defines.php');
 require_once (JPATH_BASE . DS . 'includes' . DS . 'framework.php');
-require ( 'libraries' .DS. 'joomla' .DS. 'factory.php');
-$mainframe = & JFactory::getApplication ( 'site' );
+
+
+//  SirPiter // require ( 'libraries' .DS. 'joomla' .DS. 'factory.php');
+
+require ( 'libraries' .DS. 'classmap.php');
+
+
+$mainframe = JFactory::getApplication ( 'site' );
 $mainframe->initialise ();
-$db = & JFactory::getDBO ();
+
+
+$db = JFactory::getDBO ();
+
+
 jimport ( 'joomla.error.log' );
 jimport ( 'joomla.user.helper' );
 if (VM_LOG == 'time')
 {
-	$log = &JLog::getInstance ( 'vmshop_1c_'.date('y_m_d_H_i').'.log.php' );
+	JLog::addLogger ( array('text_file' => 'vmshop_1c_'.date('y_m_d_H_i').'.log.php' ), JLog::ALL, array('vmshop_1c'));
 }
-elseif (VM_LOG == 'date')
+elseif (VM_LOG == 'date') 
 {
-	$log = &JLog::getInstance ( 'vmshop_1c_'.date('y_m_d').'.log.php' );
+    JLog::addLogger ( array('text_file' => 'vmshop_1c_'.date('y_m_d').'.log.php' ), JLog::ALL, array('vmshop_1c'));
 }
 elseif (VM_LOG == 'one')
 {
-	$log = &JLog::getInstance ( 'vmshop_1c.log.php' );
+    JLog::addLogger ( array('text_file' => 'vmshop_1c.log.php' ), JLog::ALL, array('vmshop_1c') );
 }
 else
 {
-	$log = &JLog::getInstance ( 'vmshop_1c.log.php' );
+    JLog::addLogger ( array('text_file' => 'vmshop_1c.log.php' ), JLog::ALL, array('vmshop_1c') );
 }
+
 
 $template = "";
 
 require (JPATH_BASE_1C . DS . 'checkver.php');
+JLog::add ( 'SirPiter 0) Проверка версии VM', JLog::INFO, 'vmshop_1c' );
+JLog::add ( 'SirPiter 0) VM: '.VM_VERVM.VM_VERVM_S.LANG, JLog::INFO, 'vmshop_1c' );
+
+
 
 if (VM_JPG == 'yes')
 {
@@ -162,14 +179,16 @@ $template = $templ;
 
 if (isset($_REQUEST['mode'])) 
 {
-	$log->addEntry ( array ('comment' => 'Аматор 0)'.$_REQUEST['mode']) );
-		
+	JLog::add ( 'Аматор 0)'.$_REQUEST['mode'], JLog::DEBUG, 'vmshop_1c' );
+
 	//?mode=checkauth
 	if( $_REQUEST['mode'] == 'checkauth') 
 	{
-		$log->addEntry ( array ('comment' => 'Скрипт адптации 1С и магазина Virtuemart версии: '.$version. ' Релиз: ' .$version_status.', версия скрипта: '.VM_VERSION.', обнуление базы перед выгрузкой: '.VM_DB.', выгрузка архивом: '.VM_ZIP) );
-		$log->addEntry ( array ('comment' => 'Этап 1) Авторизация на сервере') );
-		
+//		//  $log->add ( 'comment' => 'Скрипт адптации 1С и магазина Virtuemart версии: '.$version. ' Релиз: ' .$version_status.', версия скрипта: '.VM_VERSION.', обнуление базы перед выгрузкой: '.VM_DB.', выгрузка архивом: '.VM_ZIP );
+//		//  $log->add ( 'comment' => 'Этап 1) Авторизация на сервере' );
+	//    JLog::add ( 'Скрипт адптации 1С и магазина Virtuemart версии: '.$version.' Релиз: ' .$version_status.', версия скрипта: '.VM_VERSION.', обнуление базы перед выгрузкой: '.VM_DB.', выгрузка архивом: '.VM_ZIP, JLog::DEBUG, 'vmshop_1c' );
+	    JLog::add ( 'Этап 1) Авторизация на сервере', JLog::DEBUG, 'vmshop_1c' );
+	    
 		if(defined( 'VM_SITE' ))
 		{
 			$logs_http[] = 'Скрипт адптации 1С и магазина Virtuemart версии: <strong>'.$version. '</strong> Релиз: <strong>' .$version_status.'</strong>, версия скрипта: <strong>'.VM_VERSION.'</strong>, обнуление базы перед выгрузкой: <strong>'.VM_DB.'</strong>, выгрузка архивом: <strong>'.VM_ZIP.'</strong>';
@@ -187,8 +206,10 @@ if (isset($_REQUEST['mode']))
 	//?mode=init
 	elseif( $_REQUEST['mode'] == 'init') 
 	{
-		$log->addEntry ( array ('comment' => 'Этап 2) Инициализация выгрузки: Выгружать в архиве - '.VM_ZIP.', размер - '.VM_ZIPSIZE) );
-		require_once(JPATH_BASE_1C .DS.'init.php');
+		//  $log->add ( array ('comment' => 'Этап 2) Инициализация выгрузки: Выгружать в архиве - '.VM_ZIP.', размер - '.VM_ZIPSIZE) );
+	    JLog::add ( 'Этап 2) Инициализация выгрузки: Выгружать в архиве - '.VM_ZIP.', размер - '.VM_ZIPSIZE, JLog::DEBUG, 'vmshop_1c' );
+	    
+	    require_once(JPATH_BASE_1C .DS.'init.php');
 		if (isset($handle)) 
 		{
 			fclose($handle);
@@ -197,7 +218,9 @@ if (isset($_REQUEST['mode']))
 	} 
 	elseif( $_REQUEST['mode'] == 'file') 
 	{
-		$log->addEntry ( array ('comment' => 'Этап 3) Выгрузка файлов или архива и его распаковка') );
+		//  $log->add ( array ('comment' => 'Этап 3) Выгрузка файлов или архива и его распаковка') );
+	    JLog::add ( 'Этап 3) Выгрузка файлов или архива и его распаковка', JLog::DEBUG, 'vmshop_1c' );
+	    
 		$logs_http[] = '<strong>Выгрузка файлов или архива и его распаковка</strong>';
 		require_once(JPATH_BASE_1C .DS.'file.php');
 		if (isset($handle)) 
@@ -208,8 +231,9 @@ if (isset($_REQUEST['mode']))
 	} 
 	elseif( $_REQUEST['mode'] == 'import') 
 	{
-		$log->addEntry ( array ('comment' => 'Этап 4) Импорт содержимого файлов (каталог)') );
-		require_once(JPATH_BASE_1C .DS.'import.php');
+		//  $log->add ( array ('comment' => 'Этап 4) Импорт содержимого файлов (каталог)') );
+	    JLog::add ( 'Этап 4) Импорт содержимого файлов (каталог)', JLog::INFO, 'vmshop_1c' );
+	    require_once(JPATH_BASE_1C .DS.'import.php');
 		if (isset($handle)) 
 		{
 			fclose($handle);
@@ -219,7 +243,7 @@ if (isset($_REQUEST['mode']))
 //+Аматор
 	elseif( $_REQUEST['mode'] == 'importsale') 
 	{
-		$log->addEntry ( array ('comment' => 'Этап 5) Импорт заказов из 1С') );
+		//  $log->add ( array ('comment' => 'Этап 5) Импорт заказов из 1С') );
 		require_once(JPATH_BASE_1C .DS.'importsale.php');
 		if (isset($handle)) 
 		{
@@ -230,7 +254,7 @@ if (isset($_REQUEST['mode']))
 	} 
 	elseif( $_REQUEST ['mode'] == 'success') 
 	{
-		$log->addEntry ( array ('comment' => '1С закончила загрузку заказов') );
+		//  $log->add ( array ('comment' => '1С закончила загрузку заказов') );
 		print 'success\n';
 		if (isset($handle)) 
 		{
@@ -240,7 +264,7 @@ if (isset($_REQUEST['mode']))
 	}
 	elseif( $_REQUEST ['mode'] == 'query') 
 	{
-		$log->addEntry ( array ('comment' => 'Этап 2) Построение заказов') );
+		//  $log->add ( array ('comment' => 'Этап 2) Построение заказов') );
 		require_once(JPATH_BASE_1C .DS.'createzakaz.php');
 		if (isset($handle)) 
 		{
@@ -250,7 +274,7 @@ if (isset($_REQUEST['mode']))
 	}
 	elseif( $_REQUEST ['mode'] == 'settings') 
 	{
-		$log->addEntry ( array ('comment' => 'Этап 1) Настройки сохранены') );
+		//  $log->add ( array ('comment' => 'Этап 1) Настройки сохранены') );
 		require_once(JPATH_BASE_1C .DS.'change_settings.php');
 		if (isset($handle)) 
 		{
@@ -260,7 +284,7 @@ if (isset($_REQUEST['mode']))
 	}
 	else 
 	{
-		$log->addEntry ( array ('comment' => 'Операция выгрузки завершена') );
+		//  $log->add ( array ('comment' => 'Операция выгрузки завершена') );
 		print 'success\n';
 		if (isset($handle)) 
 		{
@@ -274,7 +298,7 @@ else
 {
 	if ($template == "")
 	{
-		$log->addEntry ( array ('comment' => 'Операция выгрузки завершена') );
+		//  $log->add ( array ('comment' => 'Операция выгрузки завершена') );
 		print 'success\n';
 		if (isset($handle)) 
 		{
