@@ -94,7 +94,6 @@ if (! empty ( $list ))
 // SirPiter		$db->setQuery ( "SELECT * FROM `#__".$dba['order_user_info_db']."` WHERE `address_type` = 'BT' AND `".$dba['pristavka']."order_id` =" . $zakazy->order_id . " AND `".$dba['pristavka']."user_id`=" . $zakazy->user_id );
 		$db->setQuery ( "SELECT * FROM `#__".$dba['order_user_info_db']."` WHERE `".$dba['pristavka']."order_id` =" . $zakazy->order_id . " AND `".$dba['pristavka']."user_id`=" . $zakazy->user_id );
 
-
 		$client = $db->loadObject ();
 
 		if (! empty ( $client ) & (VM_CLIENT == 1)) 
@@ -130,8 +129,6 @@ if (! empty ( $list ))
 		//$db->setQuery ( "SELECT * FROM `#__users` WHERE `id` =" . $zakazy->user_id );
 		//$us = $db->loadObject ();
 
-
-
 				$k1_2 = $k1_1->addChild ( "Наименование", $client->email );
 				$k1_2 = $k1_1->addChild ( "Роль", "Покупатель" );
 				$k1_2 = $k1_1->addChild ( "ЮрФизЛицо", "ФизЛицо" );
@@ -153,13 +150,8 @@ if (! empty ( $clientST ) & (VM_CLIENT == 1))
 $kom = $kom . ", Адрес доставки:". $clientST->city . " ". $clientST->address_type_name;
 
 }
-
 				$k1_2 = $k1_1->addChild ( "Комментарий", $kom);
-
-
 }
-			
-	
 
 		} 
 		else 
@@ -306,12 +298,9 @@ $kom = $kom . ", Адрес доставки:". $clientST->city . " ". $clientST
 			$t1_4 = $t1_3->addChild ( "Значение", "Услуга" );
 		}
 
-
-
 	//-Аматор
 	}
 } 
-
 
 if (VM_CODING == 'UTF-8') 
 {
@@ -323,15 +312,7 @@ else
 	print $xml->asXML ();
 }
 
-
-//$xmlstr = $xml->asXML ();
-//echo $xmlstr;
-
-
-//$log->addEntry ( array ('comment' => 'Этап 2) Успешно'.$xml->asXML () ) );
 JLog::add ( 'Этап 2) Успешно'.$xml->asXML (), JLog::INFO, 'vmshop_1c' );
-//JLog::add ( 'Этап 2.1) Успешно'.$xmlstr, JLog::INFO, 'vmshop_1c' );
-
 
 unlink ( JPATH_BASE_1C .DS.'login.tmp' );
 

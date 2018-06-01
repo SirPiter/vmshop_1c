@@ -85,13 +85,12 @@ function inserOffers($xml_of)
 									if (isset ( $rows_sub_Count ))
 									{
 										$data['cashgr'] = (int)$rows_sub_Count;
-									//	$log->addEntry ( array ('comment' => 'Этап 4.2.3) id группы цен ' .(int)$rows_sub_Count ) );
+										JLog::add ( 'Этап 4.2.3) id группы цен ' .(int)$rows_sub_Count , JLog::DEBUG, 'vmshop_1c' );
 									}
 									else
 									{
-										//$log->addEntry ( array ('comment' => 'Этап 4.2.3) Неудача: Ошибка запроса, нет id группы цен ' ) );
 									    JLog::add ( 'Этап 4.2.3) Неудача: Ошибка запроса, нет id группы цен ' , JLog::ERROR, 'vmshop_1c' );
-									    JLog::add ( 'Этап 4.2.3) Неудача: '.$sql , JLog::ERROR, 'vmshop_1c' );
+									    JLog::add ( 'Этап 4.2.3) Неудача: '.$sql , JLog::DEBUG, 'vmshop_1c' );
 									    if(!defined( 'VM_SITE' ))
 										{
 											echo 'failure\n';
@@ -195,7 +194,6 @@ function createOffers($data='',$custom_id='0',$offers='',$harakt='')
 	
 	if (!isset($offers['id']) or $offers['id'] == '')
 	{
-		//$log->addEntry ( array ('comment' => 'Этап 4.2.3) Неудача: Ошибка запроса, нет id товара из 1С' ) );
 	    JLog::add ( 'Этап 4.2.3) Неудача: Ошибка запроса, нет id товара из 1С' , JLog::ERROR, 'vmshop_1c' );
 	    if(!defined( 'VM_SITE' ))
 		{
@@ -224,7 +222,6 @@ function createOffers($data='',$custom_id='0',$offers='',$harakt='')
 	
 	if(!isset ( $rows_sub_Count )) 
 	{
-		//$log->addEntry ( array ('comment' => 'Этап 4.2.3) Товар '.$data['name'].' с пометкой Удален, его цены не загружаются!' ) );
 	    JLog::add ( 'Этап 4.2.3) Товар '.$data['name'].' с пометкой Удален, его цены не загружаются!' , JLog::INFO, 'vmshop_1c' );
 	    $logs_http[] = "<strong>Загрузка цен</strong> - Товар ".$data['name']." с пометкой Удален, его цены не загружаются!";
 		return;		
@@ -365,7 +362,6 @@ function createOffers($data='',$custom_id='0',$offers='',$harakt='')
 						$db->setQuery ( $sql );
 						if (!$db->query ())
 						{
-							//$log->addEntry ( array ('comment' => 'Этап 4.2.3) Неудача: Невозможно обновить прайс id - ' . $rows_sub_Count ) );
 						    JLog::add ( 'Этап 4.2.3) Неудача: Невозможно обновить прайс id - ' . $rows_sub_Count  , JLog::ERROR, 'vmshop_1c' );
 						    $log->addEntry ( array ('comment' => 'Этап 4.2.3) ' . $sql ) );
 							if(!defined( 'VM_SITE' ))
@@ -381,7 +377,6 @@ function createOffers($data='',$custom_id='0',$offers='',$harakt='')
 							die;
 						}
 						
-						//$log->addEntry ( array ('comment' => 'Этап 4.2.3) Прайс id='.$rows_sub_Count.' товара '.$data['name'].' обновлен!' ) );
 						JLog::add ( 'Этап 4.2.3) Прайс id='.$rows_sub_Count.' товара '.$data['name'].' обновлен!' , JLog::INFO, 'vmshop_1c' );
 						$logs_http[] = "<strong>Загрузка цен</strong> - Прайс id=<strong>".$rows_sub_Count."</strong>  товара <strong>".$data['name']."</strong> обновлен!";
 						
@@ -441,7 +436,6 @@ function createOffers($data='',$custom_id='0',$offers='',$harakt='')
 
 				if (! $db->insertObject ( '#__'.$dba['product_price_db'], $ins )) 
 				{
-					//$log->addEntry ( array ('comment' => 'Этап 4.2.3) Неудача: Невозможно вставить запись в таблицу - '.$dba['product_price_db'] ) );
 				    JLog::add ( 'Этап 4.2.3) Неудача: Невозможно вставить запись в таблицу - '.$dba['product_price_db'] , JLog::ERROR, 'vmshop_1c' );
 				    if(!defined( 'VM_SITE' ))
 					{
@@ -513,9 +507,7 @@ function createOffers($data='',$custom_id='0',$offers='',$harakt='')
 		$db->setQuery ( $sql );
 		if (!$db->query ())
 		{
-			//$log->addEntry ( array ('comment' => 'Этап 4.2.3) Неудача: Невозможно обновить продукт id - ' . $rows_sub_Count ) );
 		    JLog::add ( 'Этап 4.2.3) Неудача: Невозможно обновить продукт id - ' . $rows_sub_Count  , JLog::ERROR, 'vmshop_1c' );
-		    //$log->addEntry ( array ('comment' => 'Этап 4.2.3) ' . $sql ) );
 		    JLog::add ( 'Этап 4.2.3) ' . $sql , JLog::ERROR, 'vmshop_1c' );
 		    if(!defined( 'VM_SITE' ))
 			{
@@ -531,8 +523,7 @@ function createOffers($data='',$custom_id='0',$offers='',$harakt='')
 		}
 		else  // Sirpiter выводим сообщение в лог об обновлении товара
 		{
-			//$log->addEntry ( array ('comment' => 'Этап 4.2.3) ТОвар обновлен. id - ' . $product_id.', '.$data["name"].', Количество: '.$data['quantity'].', Цена:'.$price));
-		    JLog::add ( 'Этап 4.2.3) ТОвар обновлен. id - ' . $product_id.', '.$data["name"].', Количество: '.$data['quantity'].', Цена:'.$price , JLog::INFO, 'vmshop_1c' );
+		    JLog::add ( 'Этап 4.2.3) Товар обновлен. id - ' . $product_id.', '.$data["name"].', Количество: '.$data['quantity'].', Цена:'.$price , JLog::INFO, 'vmshop_1c' );
 		    
 		}	
 		/* Аматор, у нас товар должен быть виден для всех

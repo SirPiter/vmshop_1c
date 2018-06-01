@@ -12,7 +12,6 @@ if ( !defined( 'VM_1CEXPORT' ) )
 }
 
 $logs_http[] = "<strong>Загрузка товара</strong> - Проверка базы данных совместимости 1с и VMSHOP";
-//$log->addEntry ( array ('comment' => 'Этап 4.1.1) Проверка базы данных совместимости 1с и VMSHOP') );
 JLog::add ( 'Этап 4.1.1(import_xml.php) Проверка базы данных совместимости 1с и VMSHOP' , JLog::INFO, 'vmshop_1c' );
 
 // SirPiter $res = $db->setQuery ( 'SHOW COLUMNS FROM "#__'.$dba['product_to_1c_db'].'"' );
@@ -34,13 +33,11 @@ if( !$db->query($res))
 	$db->query ();
 	
 	$logs_http[] = "<strong>Загрузка товара</strong> - База product_to_1c создана";
-	//$log->addEntry ( array ('comment' => 'Этап 4.1.1) База product_to_1c создана') );
 	JLog::add ( 'Этап 4.1.1) База product_to_1c создана' , JLog::INFO, 'vmshop_1c' );
 }
 else
 {
 	$logs_http[] = "<strong>Загрузка товара</strong> - База product_to_1c уже существует";
-	//$log->addEntry ( array ('comment' => 'Этап 4.1.1) База product_to_1c уже существует') );	
 	JLog::add ( 'Этап 4.1.1) База product_to_1c уже существует' , JLog::INFO, 'vmshop_1c' );
 }
 
@@ -72,13 +69,11 @@ if( !$db->query($res3))
 	 );
 	$db->query ();	
 	
-	//$log->addEntry ( array ('comment' => 'Этап 4.1.1) База category_to_1c создана') );
 	JLog::add ( 'Этап 4.1.1) База category_to_1c создана' , JLog::INFO, 'vmshop_1c' );
 	$logs_http[] = "<strong>Загрузка товара</strong> - База category_to_1c создана";			
 }
 else
 {
-	//$log->addEntry ( array ('comment' => 'Этап 4.1.1) База category_to_1c существует') );
     JLog::add ( 'Этап 4.1.1) База category_to_1c существует' , JLog::INFO, 'vmshop_1c' );
     $logs_http[] = "<strong>Загрузка товара</strong> - База category_to_1c существует";	
 }
@@ -99,13 +94,11 @@ if( !$db->query($res3))
 	 );
 	$db->query ();	
 	
-	//$log->addEntry ( array ('comment' => 'Этап 4.1.1) База manufacturer_to_1c создана') );
 	JLog::add ( 'Этап 4.1.1) База manufacturer_to_1c создана' , JLog::INFO, 'vmshop_1c' );
 	$logs_http[] = "<strong>Загрузка товара</strong> - База manufacturer_to_1c создана";			
 }
 else
 {
-	//$log->addEntry ( array ('comment' => 'Этап 4.1.1) База manufacturer_to_1c существует') );
     JLog::add ( 'Этап 4.1.1) База manufacturer_to_1c существует' , JLog::INFO, 'vmshop_1c' );
 	$logs_http[] = "<strong>Загрузка товара</strong> - База manufacturer_to_1c существует";	
 }
@@ -123,7 +116,6 @@ $base->open($importFile);
 
 if(!$reader and !$base)
 {
-	//$log->addEntry ( array ('comment' => 'Этап 4.1.1) Неудача: Ошибка открытия XML') );	
     JLog::add ( 'Этап 4.1.1) Неудача: Ошибка открытия XML' , JLog::ERROR, 'vmshop_1c' );
 	$logs_http[] = "<strong><font color='red'>Неудача:</font></strong> Ошибка открытия XML";
 	
@@ -135,7 +127,6 @@ if(!$reader and !$base)
 }
 else
 {
-	//$log->addEntry ( array ('comment' => 'Этап 4.1.1) XML import.xml загружен') );
     JLog::add ( 'Этап 4.1.1) XML import.xml загружен' , JLog::INFO, 'vmshop_1c' );
 	$logs_http[] = "<strong>Загрузка товара</strong> - XML <strong>import.xml</strong> загружен";
 }
@@ -144,9 +135,7 @@ $data = array();
 
 $CAT = array();
 
-//$log->addEntry ( array ('comment' => 'Этап 4.1.1) Базы созданы, переходим к процесу отчистки') );
 JLog::add ( 'Этап 4.1.1) Базы созданы, переходим к процесу отчистки' , JLog::INFO, 'vmshop_1c' );
-
 $logs_http[] = "<strong>Загрузка товара</strong> - Все базы созданы, переходим к процесу отчистки";
 
 while($base->read()) 
@@ -173,15 +162,11 @@ while($base->read())
 				{
 					define ( 'VM_XML_VERS', '203' );
 				}
-				//$log->addEntry ( array ('comment' => 'Этап 4.1.1) Версия схемы XML '.$vers_xml. ' VM_XML_VERS = '.VM_XML_VERS) );
 				JLog::add ( 'Этап 4.1.1) Версия схемы XML '.$vers_xml. ' VM_XML_VERS = '.VM_XML_VERS , JLog::INFO, 'vmshop_1c' );
 				$logs_http[] = '<strong>Загрузка товара</strong> - Версия схемы XML '.$vers_xml. ' VM_XML_VERS = '.VM_XML_VERS;
 				
 				//$base->next();
 				break;
-				
-			
-				
 			
 		}
 	}
@@ -190,12 +175,9 @@ $base->close();
 
 if ($modif == 'false')
 {
-	//$log->addEntry ( array ('comment' => 'Этап 4.1.2) Базы отчищены, переходим к процесу создания категорий') );
     JLog::add ( 'Этап 4.1.2) Базы отчищены, переходим к процесу создания категорий' , JLog::INFO, 'vmshop_1c' );
-    
 	$logs_http[] = "<strong>Загрузка товара</strong> - Все базы созданы, переходим к процесу создания категорий";
 }
-
 
 //+Аматор А теперь удалим те медиа, по которым нет данным в товарах. Чистим мусор после ручного удаления картинок с сайта
 
@@ -214,14 +196,11 @@ $sql2 = "SELECT * FROM `#__".DBBASE."_medias` where `file_type` = 'product'";
 
 //-Аматор
 
-
 						$sql_5 = "DELETE FROM `#__".DBBASE."_medias` WHERE `virtuemart_media_id` = '".$row2->virtuemart_media_id."'";
 						$db->setQuery ( $sql_5 );
 						if (!$db->query ())
 						{
-							//$log->addEntry ( array ('comment' => 'Этап 4.1.3) Неудача: Невозможно очистить медиа, id - ' . $row2->virtuemart_media_id ) );
 						    JLog::add ( 'Этап 4.1.3) Неудача: Невозможно очистить медиа, id - ' . $row2->virtuemart_media_id  , JLog::ERROR, 'vmshop_1c' );
-							//$log->addEntry ( array ('comment' => 'Этап 4.1.3) ' . $sql_5 ) );
 						    JLog::add ( 'Этап 4.1.3) ' . $sql_5, JLog::ERROR, 'vmshop_1c' );
 						    
 							if(!defined( 'VM_SITE' ))
@@ -232,7 +211,6 @@ $sql2 = "SELECT * FROM `#__".DBBASE."_medias` where `file_type` = 'product'";
 							}
 							else
 							{
-								
 								$logs_http[] = "<strong>Загрузка товара</strong> - <strong><font color='red'>Неудача:</font></strong> Ошибочный запрос - <strong>".$sql_5."</strong>";
 							}
 							if(!defined( 'VM_SITE' ))
@@ -258,21 +236,17 @@ $sql2 = "SELECT * FROM #__".$dba['product_to_1c_db'];
 //+Аматор Проверим, нет ли ссылки на этот товар
 
 							$sql1 = "SELECT * FROM #__".DBBASE."_products where `virtuemart_product_id` = '" . $row2->product_id . "'";
-
 							$db->setQuery ( $sql1 );
 							$rows1 = $db->loadObject ();
 							if ($rows1) {continue;}
 
 //-Аматор
 
-
 						$sql_5 = "DELETE FROM #__".$dba['product_to_1c_db']. " WHERE `product_id` = '".$row2->product_id."'";
 						$db->setQuery ( $sql_5 );
 						if (!$db->query ())
 						{
-							//$log->addEntry ( array ('comment' => 'Этап 4.1.3) Неудача: Невозможно очистить товар, id - ' . $row2->product_id ) );
 						    JLog::add ( 'Этап 4.1.3) Неудача: Невозможно очистить товар, id - ' . $row2->product_id  , JLog::ERROR, 'vmshop_1c' );
-						    //$log->addEntry ( array ('comment' => 'Этап 4.1.3) ' . $sql_5 ) );
 						    JLog::add ( 'Этап 4.1.3) ' . $sql_5 , JLog::ERROR, 'vmshop_1c' );
 						    
 							if(!defined( 'VM_SITE' ))
@@ -296,24 +270,9 @@ $sql2 = "SELECT * FROM #__".$dba['product_to_1c_db'];
 							}
 						}
 
-
-
-
 //-Аматор
 
-
 					}
-
-
-
-
-
-
-
-
-
-
-
 
 
 while($reader->read()) 
@@ -358,7 +317,6 @@ if(!defined( 'VM_SITE' ))
 	echo "success\n";
 }
 
-//$log->addEntry ( array ('comment' => 'Этап 4.1.5) Все товары добавленны (обновленны)') );
 JLog::add ( 'Этап 4.1.5) Все товары добавленны (обновленны)', JLog::INFO, 'vmshop_1c' );
 $logs_http[] = "<strong>Загрузка товара</strong> - Все товары добавленны (обновленны)";
 $reader->close();

@@ -133,7 +133,6 @@ function makeCashgroup($data)
 		}
 		if (! $db->insertObject ( '#__'.$dba['shopper_group_db'], $ins, $dba['shopper_group_id_t'] )) 
 		{
-			//$log->addEntry ( array ('comment' => 'Этап 4.2.2) Неудача: Невозможно вставить запись в таблицу - '.$dba['shopper_group_db'] ) );
 		    JLog::add ( 'Этап 4.2.2) Неудача: Невозможно вставить запись в таблицу - '.$dba['shopper_group_db'] , JLog::ERROR, 'vmshop_1c' );
 		    
 			if(!defined( 'VM_SITE' ))
@@ -161,7 +160,6 @@ function makeCashgroup($data)
 		{
 			$sql = "SELECT virtuemart_calc_id FROM #__".$dba['tax_rate_db']." where `calc_name` = '" . $data['nds_name'] . "'";
 			$db->setQuery ( $sql );
-			//$log->addEntry ( array ('comment' => $sql ) ); //SirPiter раскомментировал
 			JLog::add ( $sql , JLog::INFO, 'vmshop_1c' );
 			
 			$calc_id = $db->loadResult ();
@@ -173,7 +171,6 @@ function makeCashgroup($data)
 				$ins->virtuemart_shoppergroup_id = (int)$shopper_group_id;
 				if (! $db->insertObject ( '#__'.$dba['tax_shopgr_db'], $ins )) 
 				{
-					//$log->addEntry ( array ('comment' => 'Этап 4.2.2) Неудача: Невозможно вставить запись в таблицу - '.$dba['tax_shopgr_db'] ) );
 				    JLog::add ( 'Этап 4.2.2) Неудача: Невозможно вставить запись в таблицу - '.$dba['tax_shopgr_db'] , JLog::ERROR, 'vmshop_1c' );
 				    if(!defined( 'VM_SITE' ))
 					{
@@ -196,7 +193,6 @@ function makeCashgroup($data)
 			
 		if (! $db->insertObject ( '#__'.$dba['cashgroup_to_1c_db'], $ins )) 
 		{
-			//$log->addEntry ( array ('comment' => 'Этап 4.2.2) Неудача: Невозможно вставить запись в таблицу - '.$dba['cashgroup_to_1c_db'] ) );
 		    JLog::add ( 'Этап 4.2.2) Неудача: Невозможно вставить запись в таблицу - '.$dba['cashgroup_to_1c_db'] , JLog::ERROR, 'vmshop_1c' );
 			if(!defined( 'VM_SITE' ))
 			{
@@ -210,7 +206,6 @@ function makeCashgroup($data)
 			die;
 		}
 		
-		//$log->addEntry ( array ('comment' => 'Этап 4.2.2) Ценовая группа '.$data['name'].' создана' ) );
 		JLog::add ( 'Этап 4.2.2) Ценовая группа '.$data['name'].' создана' , JLog::INFO, 'vmshop_1c' );
 		$logs_http[] = "<strong>Загрузка цен</strong> - Ценовая группа <strong>".$data['name']."</strong> создана";
 	}

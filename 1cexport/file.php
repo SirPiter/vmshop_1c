@@ -23,12 +23,10 @@ else
 }
 
 // Проверяем на наличие имени файла
-//$log->addEntry ( array ('comment' => 'Этап 3.1) Проверка наличия имени файла ' . $filename_to_save ) );
 JLog::add ( 'Этап 3.1) Проверка наличия имени файла ' . $filename_to_save, JLog::INFO, 'vmshop_1c' );
 
 if( !isset($fnm) or $fnm == "" ) 
 {
-	//$log->addEntry ( array ('comment' => 'Этап 3.1) Неудача! Отсутствует файл') );
     JLog::add ( 'Этап 3.1) Неудача! Отсутствует файл', JLog::ERROR, 'vmshop_1c' );
 	
 	if(!defined( 'VM_SITE' ))
@@ -55,20 +53,15 @@ $big_zip = false;
 
 if(VM_ZIP == 'no')
 {		
-	//$log->addEntry ( array ('comment' => 'Этап 3.1) SirPiter, '.$_REQUEST['filename']) );
     JLog::add ( 'Этап 3.1) SirPiter, '.$_REQUEST['filename'], JLog::INFO, 'vmshop_1c' );
     
 	if(unlink ( JPATH_BASE_PICTURE.DS.$_REQUEST['filename'] ))
 	{
-		//$log->addEntry ( array ('comment' => 'Этап 3.1) SirPiter. Файл '.JPATH_BASE_PICTURE.DS.$_REQUEST['filename'].' удален.' ) );
 	    JLog::add ( 'Этап 3.1) SirPiter. Файл '.JPATH_BASE_PICTURE.DS.$_REQUEST['filename'].' удален.', JLog::INFO, 'vmshop_1c' );
-	    
 	} 
 	else
 	{
-		//$log->addEntry ( array ('comment' => 'Этап 3.1) SirPiter. Файл '.JPATH_BASE_PICTURE.DS.$_REQUEST['filename'].' не удален.' ));
 		JLog::add ( 'Этап 3.1) SirPiter. Файл '.JPATH_BASE_PICTURE.DS.$_REQUEST['filename'].' не удален.', JLog::INFO, 'vmshop_1c' );
-		
 	}
 
 		// Проверяем XML или изображения
@@ -76,9 +69,7 @@ if(VM_ZIP == 'no')
 		{
 			$path = stristr( $_REQUEST['filename'], 'import_files');
 			
-			//$log->addEntry ( array ('comment' => 'Этап 3.1) Проверяем наличие старых временных папок и файлов') );
 			JLog::add ( 'Этап 3.1) Проверяем наличие старых временных папок и файлов', JLog::INFO, 'vmshop_1c' );
-			
 			$logs_http[] = "<strong>Отправка файлов</strong> - Проверяем наличие старых временных папок и файлов";	
 			
 			foreach( explode('/', $path) as $name) 
@@ -90,15 +81,11 @@ if(VM_ZIP == 'no')
 						$name = 'import_files'.DS.$name;
 					}
 					
-					//$log->addEntry ( array ('comment' => 'Этап 3.1) Проверяем наличие папки: '.$name) );
 					JLog::add ( 'Этап 3.1) Проверяем наличие папки: '.$name, JLog::INFO, 'vmshop_1c' );
-					
 					$logs_http[] = "<strong>Отправка файлов</strong> - Проверяем наличие папки: ".$name;	
 					if(!is_dir( JPATH_BASE_PICTURE.DS.$name ) ) 
 					{
-						//$log->addEntry ( array ('comment' => 'Этап 3.1) Создаем папку: '.$name) );
 					    JLog::add ( 'Этап 3.1) Создаем папку: '.$name, JLog::INFO, 'vmshop_1c' );
-					    
 						$logs_http[] = "<strong>Отправка файлов</strong> - Создаем папку: ".$name;
 						mkdir( JPATH_BASE_PICTURE.DS.$name, 0777, true );
 					}
@@ -119,9 +106,7 @@ else
 			{
 				zip_close($zip);
 				unlink ( JPATH_BASE_PICTURE.DS.$filename_zip );
-				//$log->addEntry ( array ('comment' => 'Этап 3.1) Старый архив '.$filename_zip.' удален') );
 				JLog::add ( 'Этап 3.1) Старый архив '.$filename_zip.' удален', JLog::INFO, 'vmshop_1c' );
-				
 				$logs_http[] = "<strong>Отправка файлов</strong> - Старый архив ".$filename_zip." удален";
 			}
 		}
@@ -137,9 +122,7 @@ else
 {
 	$filename_to_save = JPATH_BASE_PICTURE . DS . $_FILES['filename']['name'];
 }
-//$log->addEntry ( array ('comment' => 'Этап 3.2) Загружаем файл: '.$filename_to_save) );
 JLog::add ( 'Этап 3.2) Загружаем файл: '.$filename_to_save, JLog::INFO, 'vmshop_1c' );
-
 $logs_http[] = "<strong>Отправка файлов</strong> - Загружаем файл: ".$filename_to_save;	
 
 // Получаем данные
@@ -151,16 +134,12 @@ else
 {
 	if (move_uploaded_file($_FILES['filename']['tmp_name'], $filename_to_save)) 
 	{
-   		//$log->addEntry ( array ('comment' => 'Этап 3.2) Файл загружен: '.$filename_to_save) );
 	    JLog::add ( 'Этап 3.2) Файл загружен: '.$filename_to_save, JLog::INFO, 'vmshop_1c' );
-	    
 		$logs_http[] = "<strong>Отправка файлов</strong> - Файл загружен: ".$filename_to_save;
 	} 
 	else 
 	{
-		//$log->addEntry ( array ('comment' => 'Этап 3.2) Неудача:</strong> Немогу открыть файл - '.$filename_to_save) );
 	    JLog::add ( 'Этап 3.2) Неудача:</strong> Немогу открыть файл - '.$filename_to_save, JLog::ERROR, 'vmshop_1c' );
-	    
 		$logs_http[] = "<strong>Отправка файлов</strong> - <strong><font color='red'>Неудача:</font></strong> Немогу открыть файл - ".$filename_to_save;
 	}
 	
@@ -175,22 +154,18 @@ if(isset ( $DATA ) or $DATA !== false)
 		if($fp) 
 		{
 			set_file_buffer ( $fp, 20 );
-			
 			$result = fwrite($fp, $DATA);
 			
 			if($result === strlen($DATA))
 			{
 				$resultat = "success\n";
 				
-				//$log->addEntry ( array ('comment' => 'Этап 3.2) Файл загружен: '.$filename_to_save) );
 				JLog::add ( 'Этап 3.2) Файл загружен: '.$filename_to_save, JLog::INFO, 'vmshop_1c' );
-				
 				
 				fclose($fp);
 				
 				if(!chmod($filename_to_save , 0777))
 				{
-					//$log->addEntry ( array ('comment' => 'Этап 3.2) Неудача: Невозможно применить права - '.$filename_to_save) );
 				    JLog::add ( 'Этап 3.2) Неудача: Невозможно применить права - '.$filename_to_save, JLog::ERROR, 'vmshop_1c' );
 				    
 				    echo "failure\n";
@@ -206,7 +181,6 @@ if(isset ( $DATA ) or $DATA !== false)
 			}
 			else
 			{
-				//$log->addEntry ( array ('comment' => 'Этап 3.2) Неудача: Пустой файл - '.$filename_to_save) );
 			    JLog::add ( 'Этап 3.2) Неудача: Пустой файл - '.$filename_to_save, JLog::ERROR, 'vmshop_1c' );
 			    
 				echo "failure\n";
@@ -222,7 +196,6 @@ if(isset ( $DATA ) or $DATA !== false)
 		}
 		else
 		{
-			//$log->addEntry ( array ('comment' => 'Этап 3.2) Неудача: Не могу открыть файл - '.$filename_to_save) );
 		    JLog::add ( 'Этап 3.2) Неудача: Не могу открыть файл - '.$filename_to_save, JLog::ERROR, 'vmshop_1c' );
 			
 			echo "failure\n";
@@ -242,7 +215,6 @@ if(isset ( $DATA ) or $DATA !== false)
 }
 else
 {
-	//$log->addEntry ( array ('comment' => 'Этап 3.2) Неудача: Нет файлов для загрузки - '.$filename_to_save) );
     JLog::add ( 'Этап 3.2) Неудача: Нет файлов для загрузки - '.$filename_to_save, JLog::ERROR, 'vmshop_1c' );
     	
 	if(!defined( 'VM_SITE' ))
@@ -282,11 +254,9 @@ if(VM_ZIP == 'yes')
 				}
 				else
 				{				
-					//$log->addEntry ( array ('comment' => 'Этап 3.2.а) Разархивирование файла - '.JPATH_BASE_PICTURE.DS.$filename_save ) );
 				    JLog::add ( 'Этап 3.2.а) Разархивирование файла - '.JPATH_BASE_PICTURE.DS.$filename_save, JLog::INFO, 'vmshop_1c' );
 				    
 					$logs_http[] = "<strong>Отправка файлов</strong> - Разархивирование файла - ".JPATH_BASE_PICTURE.DS.$filename_save;
-					
 					$logs_http[] = "<strong>Отправка файлов</strong> - Построение структуры папок";
 					
 					while ( $zip_entry_f = zip_read ( $zip ) ) 
@@ -297,7 +267,6 @@ if(VM_ZIP == 'yes')
 						# Создем отсутствующие директории
 						if (! is_dir ( $path_parts ['dirname'] )) 
 						{
-							//$log->addEntry ( array ('comment' => 'Этап 3.2.а) Создание директории ' . $path_parts ['dirname'] ) );
 						    JLog::add ( 'Этап 3.2.а) Создание директории ' . $path_parts ['dirname'], JLog::INFO, 'vmshop_1c' );
 						    $logs_http[] = "<strong>Отправка файлов</strong> - Создание директории - ".$path_parts ['dirname'];
 							mkdir ( $path_parts ['dirname'], 0777, true );
@@ -329,7 +298,6 @@ if(VM_ZIP == 'yes')
 								} 
 								else 
 								{
-									//$log->addEntry ( array ('comment' => 'Этап 3.2.а) Неудача: Невозможно открыть архив - ' . $name ) );
 								    JLog::add ( 'Этап 3.2.а) Неудача: Невозможно открыть архив - ' . $name, JLog::ERROR, 'vmshop_1c' );
 								    
 									if(defined( 'VM_SITE' ))
@@ -357,7 +325,6 @@ if(VM_ZIP == 'yes')
 			}
 			else 
 			{
-				//$log->addEntry ( array ('comment' => 'Этап 3.2.а) Неудача: Невозможно разархивировать файл - ' . $filename_save ) );
 			    JLog::add ( 'Этап 3.2.а) Неудача: Невозможно разархивировать файл - ' . $filename_save, JLog::ERROR, 'vmshop_1c' );
 			    
 				if(!defined( 'VM_SITE' ))
@@ -383,7 +350,6 @@ if(VM_ZIP == 'yes')
 
 if (!$big_zip)
 {
-	//$log->addEntry ( array ('comment' => 'Этап 3.3) Копирование картинок из временного каталога') );
     JLog::add ( 'Этап 3.3) Копирование картинок из временного каталога', JLog::INFO, 'vmshop_1c' );
     
 	$logs_http[] = "<strong>Отправка файлов</strong> - Копирование картинок из временного каталога";
@@ -395,7 +361,6 @@ if (!$big_zip)
 		{
 			if (is_dir(JPATH_BASE_PICTURE.DS.'import_files'.DS.$filename_img_dir.DS) & $filename_img_dir != '.' & $filename_img_dir != '..')
 			{
-				//$log->addEntry ( array ('comment' => 'Этап 3.3) Обрабатываем каталог: '.$filename_img_dir) );
 			    JLog::add ( 'Этап 3.3) Обрабатываем каталог: '.$filename_img_dir, JLog::INFO, 'vmshop_1c' );
 				
 				$logs_http[] = "<strong>Отправка файлов</strong> - Обрабатываем каталог: ".$filename_img_dir;
@@ -417,7 +382,6 @@ if (!$big_zip)
 						{
 							$newfile = JPATH_BASE_PICTURE.DS.$filename_img;
 						}
-						//$log->addEntry ( array ('comment' => 'Этап 3.3) Копирование файла ' . $file .' в ' . $newfile ) );
 						JLog::add ( 'Этап 3.3) Копирование файла ' . $file .' в ' . $newfile, JLog::INFO, 'vmshop_1c' );
 						
 						$logs_http[] = "<strong>Отправка файлов</strong> - Копирование файла: ".$file." в ".$newfile;
@@ -429,7 +393,6 @@ if (!$big_zip)
 						
 						if (!rename($file, $newfile)) 
 						{
-							//$log->addEntry ( array ('comment' => 'Этап 3.3) Неудача: Невозможно скопировать файл - ' . $filename_img ) );
 						    JLog::add ( 'Этап 3.3) Неудача: Невозможно скопировать файл - ' . $filename_img, JLog::ERROR, 'vmshop_1c' );
 						    
 							if(!defined( 'VM_SITE' ))
@@ -473,7 +436,6 @@ if (!$big_zip)
 							
 								if(!img_resize($newfile, $resize_img, VM_TBN_H, VM_TBN_W, VM_TBN_RED, VM_TBN_GREEN, VM_TBN_BLUE, VM_TBN_QTY))
 								{
-									//$log->addEntry ( array ('comment' => 'Этап 3.3) Неудача: Невозможно создать thumbnails - ' . $resize_img ) );
 								    JLog::add ( 'Этап 3.3) Неудача: Невозможно создать thumbnails - ' . $resize_img, JLog::ERROR, 'vmshop_1c' );
 								    echo "failure\n";
 									echo "Can not make thumbnails: $resize_img\n";
@@ -485,7 +447,6 @@ if (!$big_zip)
 							{
 								if(!image_resize($newfile, $resize_img, VM_TBN_H, VM_TBN_W, VM_TBN_QTY))
 								{
-									//$log->addEntry ( array ('comment' => 'Этап 3.3) Неудача: Невозможно создать thumbnails - ' . $resize_img ) );
 									JLog::add ( 'Этап 3.3) Неудача: Невозможно создать thumbnails - ' . $resize_img, JLog::ERROR, 'vmshop_1c' );
 								    */				
 									$logs_http[] = "<strong>Отправка файлов</strong> - <strong><font color='red'>Неудача:</font></strong> Невозможно создать thumbnails - ".$resize_img;
@@ -506,22 +467,18 @@ if (!$big_zip)
 			}
 		}
 		rmdir (JPATH_BASE_PICTURE.DS.'import_files');
-		//$log->addEntry ( array ('comment' => 'Этап 3.3) Папка import_files удалена ' ) );
 		JLog::add ( 'Этап 3.3) Папка import_files удалена ' , JLog::INFO, 'vmshop_1c' );
 		
 		$logs_http[] = "<strong>Отправка файлов</strong> - Папка import_files удалена";	
 	}
 	
-	//$log->addEntry ( array ('comment' => 'Этап 3) Успешно') );
 	JLog::add ( 'Этап 3) Успешно' , JLog::INFO, 'vmshop_1c' );
-	
-	
 	$logs_http[] = "<strong>Отправка файлов</strong> - Успешно";	
 }
 if($resultat and !defined( 'VM_SITE' ))
 {
-	//$log->addEntry ( array ('comment' => 'Аматор 6) '.$resultat) );
-	echo $resultat.$_REQUEST ['filename'];
+    JLog::add ( 'Аматор 6) '.$resultat , JLog::INFO, 'vmshop_1c' );
+    echo $resultat.$_REQUEST ['filename'];
 }
 	
 if(defined( 'VM_SITE' ))

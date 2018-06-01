@@ -19,7 +19,6 @@ if( file_exists ( JPATH_BASE_PICTURE. DS . $_REQUEST['filename'] ))
 else 
 {
 	$logs_http[] = "<strong><font color='red'>Неудача:</font></strong> Файл ".$_REQUEST['filename']." отсутствует!";	
-	//$log->addEntry ( array ('comment' => 'Этап 4) Неудача: Файл '.$_REQUEST['filename'].' отсутствует!') );
 	JLog::add ( 'Этап 4) Неудача: Файл '.$_REQUEST['filename'].' отсутствует!', JLog::ERROR, 'vmshop_1c' );
 	
 	echo "failure\n";
@@ -27,10 +26,7 @@ else
 	return 0;
 }
 
-
-
 require_once(JPATH_BASE_1C .DS.'importsale_xml.php');
-
 
 if(defined( 'VM_SITE' ))
 {
@@ -42,7 +38,6 @@ if(defined( 'VM_SITE' ))
 	{
 		$enable = '';
 	}
-	
 	
 		$form = 'index.php';
 		$button = '<input type="submit" value="Закончить"'.$enable.'>';

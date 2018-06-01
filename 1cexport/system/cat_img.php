@@ -49,8 +49,6 @@ function Ins_cat_img()
 			$cat_name = $cat_rows->category_name;
 		}
 		
-				
-		//$log->addEntry ( array ('comment' => '-------------------'.$cat_name.'-------------------' ) );
 		JLog::add ( '-------------------'.$cat_name.'-------------------' , JLog::INFO, 'vmshop_1c' );
 		$logs_http[] = "<strong>Загрузка товара</strong> ------------------- <strong>".$cat_name."</strong> -------------------";
 		
@@ -58,14 +56,12 @@ function Ins_cat_img()
 		{
 			if(!isset($cat_img) or $cat_img == "")
 			{
-				//$log->addEntry ( array ('comment' => 'Этап 4.1.4) Добавляем картинку в категорию '.$cat_name ) );
 			    JLog::add ( 'Этап 4.1.4) Добавляем картинку в категорию '.$cat_name  , JLog::INFO, 'vmshop_1c' );
 				$logs_http[] = "<strong>Загрузка товара</strong> - Добавляем картинку в категорию - <strong>".$cat_name."</strong>";
 				$make_cimg = true;
 			}
 			else
 			{
-				//$log->addEntry ( array ('comment' => 'Этап 4.1.4) Категория '.$cat_name.' уже имеет картинку' ) );
 			    JLog::add ( 'Этап 4.1.4) Категория '.$cat_name.' уже имеет картинку' , JLog::INFO, 'vmshop_1c' );
 			    $logs_http[] = "<strong>Загрузка товара</strong> - Категория <strong>".$cat_name."</strong> уже имеет картинку";
 				$make_cimg = false;
@@ -78,14 +74,12 @@ function Ins_cat_img()
 			$c_media = $db->loadResult ();
 			if (isset($c_media) )
 			{
-				//$log->addEntry ( array ('comment' => 'Этап 4.1.4) Категория '.$cat_name.' уже имеет картинку' ) );
 			    JLog::add ( 'Этап 4.1.4) Категория '.$cat_name.' уже имеет картинку' , JLog::INFO, 'vmshop_1c' );
 			    $logs_http[] = "<strong>Загрузка товара</strong> - Категория <strong>".$cat_name."</strong> уже имеет картинку";
 				$make_cimg = false;
 			}
 			else
 			{
-				//$log->addEntry ( array ('comment' => 'Этап 4.1.4) Добавляем картинку в категорию '.$cat_name ) );
 			    JLog::add ( 'Этап 4.1.4) Добавляем картинку в категорию '.$cat_name , JLog::INFO, 'vmshop_1c' );
 			    $logs_http[] = "<strong>Загрузка товара</strong> - Добавляем картинку в категорию - <strong>".$cat_name."</strong>";
 				$make_cimg = true;
@@ -116,7 +110,9 @@ function Ins_cat_img()
 						{
 							$sql = "SELECT virtuemart_media_id FROM #__".DBBASE."_product_medias where `".$dba['pristavka']."product_id` = '" . (int)$prodid->virtuemart_product_id . "'";
 							$db->setQuery ( $sql );
-							//$log->addEntry ( array ('comment' => $sql ) );
+							JLog::add ( $sql , JLog::DEBUG, 'vmshop_1c' );
+							
+							
 							$med_id = $db->loadResult ();
 							if (isset($med_id))
 							{
@@ -127,7 +123,7 @@ function Ins_cat_img()
 						{
 							$sql = "SELECT product_id, product_full_image FROM #__".DBBASE."_product where `".$dba['pristavka']."product_id` = '" . (int)$prodid->product_id . "'";
 							$db->setQuery ( $sql );
-							//$log->addEntry ( array ('comment' => $sql ) );
+							JLog::add ( $sql , JLog::DEBUG, 'vmshop_1c' );
 							$med_id = $db->loadObject ();
 							if (isset($med_id->product_full_image) and $med_id->product_full_image != "")
 							{
@@ -286,7 +282,6 @@ function Ins_cat_img()
 						}
 						
 						if (!file_exists($file)) {
-							//$log->addEntry ( array ('comment' => 'не удалось скопировать '.$file.'...\n' ) );
 						    JLog::add ( 'не удалось скопировать '.$file.'...\n' , JLog::ERROR, 'vmshop_1c' );
 						    $logs_http[] = "<strong>Загрузка товара</strong> - <strong><font color='red'>Неудача:</font></strong> Не удалось скопировать <strong>".$file."</strong>";
 						}
@@ -304,7 +299,6 @@ function Ins_cat_img()
 						}
 						
 						if (!file_exists($newfile_tb)) {
-							//$log->addEntry ( array ('comment' => 'не удалось скопировать '.$file_tb.'...\n' ) );
 						    JLog::add ( 'не удалось скопировать '.$file_tb.'...\n' , JLog::ERROR, 'vmshop_1c' );
 						    $logs_http[] = "<strong>Загрузка товара</strong> - <strong><font color='red'>Неудача:</font></strong> Не удалось скопировать <strong>".$file_tb."</strong>";
 						}
@@ -342,11 +336,10 @@ function Ins_cat_img()
 					$ins->modified_on = date ('Y-m-d H:i:s');
 					$ins->modified_by = $id_admin;
 						
-					//$log->addEntry ( array ('comment' => $cat_name .' / '. $media->file_mimetype .' / '. $media->file_url .' / '. $media->file_url_thumb ) );
-								
+					JLog::add ( $cat_name .' / '. $media->file_mimetype .' / '. $media->file_url .' / '. $media->file_url_thumb , JLog::DEBUG, 'vmshop_1c' );
+					
 					if (! $db->insertObject ( '#__'.$dba['product_files_db'], $ins, 'virtuemart_media_id' )) 
 					{
-						//$log->addEntry ( array ('comment' => 'Этап 4.1.4) Неудача: Невозможно вставить запись в таблицу - '.DBBASE.'_medias' ) );
 					    JLog::add ( 'Этап 4.1.4) Неудача: Невозможно вставить запись в таблицу - '.DBBASE.'_medias' , JLog::ERROR, 'vmshop_1c' );
 						if(!defined( 'VM_SITE' ))
 						{
@@ -369,7 +362,6 @@ function Ins_cat_img()
 						
 					if (! $db->insertObject ( '#__'.DBBASE.'_category_medias', $ins )) 
 					{
-						//$log->addEntry ( array ('comment' => 'Этап 4.1.4) Неудача: Невозможно вставить запись в таблицу - '.DBBASE.'_product_medias' ) );
 					    JLog::add ( 'Этап 4.1.4) Неудача: Невозможно вставить запись в таблицу - '.DBBASE.'_product_medias' , JLog::ERROR, 'vmshop_1c' );
 					    if(!defined( 'VM_SITE' ))
 						{
@@ -405,9 +397,7 @@ function Ins_cat_img()
 						unlink ($newfile);
 					}
 					if (!copy($file, $newfile)) {
-						//$log->addEntry ( array ('comment' => 'не удалось скопировать '.$file.'...\n' ) );
 					    JLog::add ( 'не удалось скопировать '.$file.'...\n' , JLog::ERROR, 'vmshop_1c' );
-					    
 					}
 						
 					$file_tb = JPATH_BASE_PICTURE.DS.$media->product_thumb_image;
@@ -418,7 +408,6 @@ function Ins_cat_img()
 						unlink ($newfile_tb);
 					}
 					if (!copy($file_tb, $newfile_tb)) {
-					//	$log->addEntry ( array ('comment' => 'не удалось скопировать '.$file_tb.'...\n' ) );
 					    JLog::add ( 'не удалось скопировать '.$file_tb.'...\n' , JLog::ERROR, 'vmshop_1c' );
 					}
 					
@@ -439,13 +428,11 @@ function Ins_cat_img()
 				
 			if ($change_cimg == true)
 			{
-				//$log->addEntry ( array ('comment' => 'Этап 4.1.4) Для категории '.$cat_name.' добавлена картинка' ) );
 			    JLog::add ( 'Этап 4.1.4) Для категории '.$cat_name.' добавлена картинка' , JLog::INFO, 'vmshop_1c' );
 			    $logs_http[] = "<strong>Загрузка товара</strong> - Для категории - <strong>".$cat_name."</strong> добавлена картинка";
 			}
 			elseif ($change_cimg == false)
 			{
-				//$log->addEntry ( array ('comment' => 'Этап 4.1.4) Для категории '.$cat_name.' нет картинки' ) );
 			    JLog::add ( 'Этап 4.1.4) Для категории '.$cat_name.' нет картинки' , JLog::INFO, 'vmshop_1c' );
 			    $logs_http[] = "<strong>Загрузка товара</strong> - Для категории - <strong>".$cat_name."</strong> нет картинки";
 			}

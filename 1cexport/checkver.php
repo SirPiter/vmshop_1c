@@ -13,14 +13,21 @@ if ( !defined( 'VM_1CEXPORT' ) )
 
 //Проверяем версию магазина
 
-// Пока не проверяем - просто устанавливаем
+// Пока не проверяем - просто устанавливаем. SirPiter
 
 /*
 
 if (!class_exists( 'vmVersion' ))
 {
-	require (JPATH_BASE . DS . 'administrator' . DS . 'components' . DS . 'com_virtuemart' . DS . 'version.php');
+//	require (JPATH_BASE . DS . 'administrator' . DS . 'components' . DS . 'com_virtuemart' . DS . 'version.php');
 	//$VMVERSION = explode ( " ", $shortversion )	;
+	
+// надо попробовать так :
+ require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_virtuemart'.DS.'helpers'.DS.'config.php');
+ require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_virtuemart'.DS.'helpers'.DS.'calculationh.php');
+ //$version = substr(vmVersion::$RELEASE, 0, 1);
+//
+	
 	
 	
 	$VMVERSION = vmVersion::$RELEASE;
