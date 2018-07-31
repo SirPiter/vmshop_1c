@@ -17,7 +17,7 @@ $no_spaces = '<?xml version="1.0" encoding="UTF-8"?>
 
 $xml = new SimpleXMLElement ( $no_spaces );
 
-$db->setQuery ( "SELECT * FROM `#__".DBBASE."_orders` WHERE `order_status` LIKE 'U'" );  // SirPiter изменил запрос, добавив наименование статуса заказа
+$db->setQuery ( "SELECT * FROM `#__".DBBASE."_orders` WHERE `order_status` LIKE 'P'" );  // SirPiter изменил запрос, добавив наименование статуса заказа
 
 //$db->setQuery ( "SELECT *, #__virtuemart_orderstates.order_status_name FROM `#__".DBBASE."_orders`  
 //      		LEFT JOIN #__virtuemart_orderstates ON #__".DBBASE."_orders.order_status = #__virtuemart_orderstates.order_status_code 
@@ -46,6 +46,10 @@ if (! empty ( $list ))
 			$dattime = explode(" ", $zakazy->mdate);
 			$date = $dattime[0];
 			$time = $dattime[1];
+
+			$date = JHtml::date ( $zakazy->mdate, 'Y-m-d', true );  // добавил Sirpiter 30.07.2018 для учета временной зоны
+			$time = JHtml::date ( $zakazy->mdate, 'H:i:s', true );  // добавил Sirpiter 30.07.2018 для учета временной зоны
+
 			
 			$sql = "SELECT currency_code_3 FROM #__virtuemart_currencies where `virtuemart_currency_id` = '" . $zakazy->order_currency . "'";
 			$db->setQuery ( $sql );
@@ -54,8 +58,14 @@ if (! empty ( $list ))
 		}
 		else
 		{
-			$date = date ( 'Y-m-d', $zakazy->mdate );
-			$time = date ( 'H:i:s', $zakazy->mdate );
+//			$date = date ( 'Y-m-d', $zakazy->mdate );
+//			$time = date ( 'H:i:s', $zakazy->mdate );
+			
+			$date = JHtml::date ( $zakazy->mdate, 'Y-m-d', true );  // добавил Sirpiter 30.07.2018 для учета временной зоны
+			$time = JHtml::date ( $zakazy->mdate, 'H:i:s', true );  // добавил Sirpiter 30.07.2018 для учета временной зоны
+
+
+
 			$val = ( string ) $zakazy->order_currency;	
 		}
 		# Валюта документа
